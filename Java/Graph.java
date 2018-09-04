@@ -5,7 +5,7 @@ import java.util.List;
 public class Graph{
 
     private int nodes;
-    private int countryCounter;   //used as an iterator to bind a country name to the hash map(country ID)
+    private int countryCounter;   //used as an iterator to bind a country name to the hash Map(country ID)
     private List<String> arrayOfNodes[];
     private HashMap<String, Integer> myVertices; //Basically we can use the country name to identify where index it is
 
@@ -17,7 +17,7 @@ public class Graph{
         myVertices = new HashMap<>();
         countriesInOrder = new LinkedList<>();
         //The set of keys (countryNames) returns out of order, but since the index of array is mapped in order
-        //we have to use a linkedList to keep track of countries in order, see print map adjacencies
+        //we have to use a linkedList to keep track of countries in order, see print Map adjacencies
     }
 
 //Map functions
@@ -46,6 +46,10 @@ public class Graph{
 
         int countryID = myVertices.get(nodeName);
         arrayOfNodes[countryID].add(countryName);
+
+        //create the edge going the other way as well
+        int countryID2 = myVertices.get(countryName);
+        arrayOfNodes[countryID2].add(nodeName);
 
     }
 
@@ -77,6 +81,10 @@ public class Graph{
 
     public List<String> getCountryAdjacency(String countryName){
         return arrayOfNodes[myVertices.get(countryName)];
+    }
+
+    public List<String> getCountriesInOrder(){
+        return countriesInOrder;
     }
 
 

@@ -22,12 +22,15 @@ public class main {
 
 
         Graph myGame = new Graph();
-        myGame.createInitialMap(3);
+        myGame.createInitialMap(6);
         myGame.bindCountriesToNumbers("USA");
         myGame.bindCountriesToNumbers("JPN");
         myGame.bindCountriesToNumbers("EU");
 
 
+        myGame.bindCountriesToNumbers("CA");
+        myGame.bindCountriesToNumbers("SA");
+        myGame.bindCountriesToNumbers("AFRICA");
 
 
         myGame.addEdge(USA, CA);
