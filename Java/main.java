@@ -1,83 +1,100 @@
-import java.util.*;
-import java.util.HashMap;
+    import java.util.*;
+    import java.util.HashMap;
 
 
-public class main {
+    public class main {
 
-    //LinkedList<Integer> object = new LinkedList<Integer>();
-
-
-    public static void main(String[] args){
+        //LinkedList<Integer> object = new LinkedList<Integer>();
 
 
-        //Creates the graph we can reference for adjacency
-        String USA = "USA";
-        String JPN = "JPN";
-        String EU = "EU";
+        public static void main(String[] args){
 
 
-        String CA = "CA";
-        String SA = "SA";
-        String AFICA = "AFRICA";
+            //Creates the graph we can reference for adjacency
+            String USA = "USA";
+            String JPN = "JPN";
+            String EU = "EU";
 
 
-        Graph myGame = new Graph();
-        myGame.createInitialMap(6);
-        myGame.bindCountriesToNumbers("USA");
-        myGame.bindCountriesToNumbers("JPN");
-        myGame.bindCountriesToNumbers("EU");
+            String CA = "CA";
+            String SA = "SA";
+            String AFICA = "AFRICA";
 
 
-        myGame.bindCountriesToNumbers("CA");
-        myGame.bindCountriesToNumbers("SA");
-        myGame.bindCountriesToNumbers("AFRICA");
+            Graph myGame = new Graph();
+            myGame.createInitialMap(6);
+            myGame.bindCountriesToNumbers("USA");
+            myGame.bindCountriesToNumbers("JPN");
+            myGame.bindCountriesToNumbers("EU");
 
 
-        myGame.addEdge(USA, CA);
-        myGame.addEdge(USA, SA);
-        myGame.addEdge(EU, AFICA);
+            myGame.bindCountriesToNumbers("CA");
+            myGame.bindCountriesToNumbers("SA");
+            myGame.bindCountriesToNumbers("AFRICA");
 
 
-        myGame.printMapAdjacencies();
+            myGame.addEdge(USA, CA);
+            myGame.addEdge(USA, SA);
+            myGame.addEdge(EU, AFICA);
 
 
-        Map myGameMap = new Map(myGame);
-        myGameMap.getMapStatus();
+            myGame.printMapAdjacencies();
+
+
+            Map myGameMap = new Map(myGame);
 
 
 
-        /*
-        List<String> adjacencyOfUSA = myGame.getCountryAdjacency(USA);
-        if(adjacencyOfUSA.contains(CA)) {
-            System.out.println("Yes");
-        }
 
 
-        List<String> adjacencyOfUSA2 = myGame.getCountryAdjacency(USA);
+            Player mike = new Player("Mike");
+            Player bryan = new Player("Bryan");
+            Player brandon = new Player("Brandon");
 
-            if(adjacencyOfUSA2.contains(AFICA)){
+            myGameMap.addArmy(USA, mike);
+            myGameMap.addArmy(AFICA, mike);
+            myGameMap.addArmy(EU, mike);
+            myGameMap.addArmy(JPN, mike);
+            myGameMap.addArmy(CA, mike);
+            myGameMap.addArmy(SA, mike);
+
+            //myGameMap.getMapStatus();
+
+            System.out.println(myGameMap.isGameOver());
+
+
+            /*
+            List<String> adjacencyOfUSA = myGame.getCountryAdjacency(USA);
+            if(adjacencyOfUSA.contains(CA)) {
                 System.out.println("Yes");
             }
-            else{
-                System.out.println("No");
+
+
+            List<String> adjacencyOfUSA2 = myGame.getCountryAdjacency(USA);
+
+                if(adjacencyOfUSA2.contains(AFICA)){
+                    System.out.println("Yes");
+                }
+                else{
+                    System.out.println("No");
+                }
+
+
+
+
+            List<String> adjacencyOfJPN = myGame.getCountryAdjacency(JPN);
+            if(adjacencyOfJPN.isEmpty()){
+                System.out.println("empty");
             }
+            for(String adjacency: adjacencyOfJPN){
+                if(CA == adjacency){
+                    System.out.println("Yes");
+                }
+                else{
+                    System.out.println("No");
+                }
+            }
+            */
 
-
-
-
-        List<String> adjacencyOfJPN = myGame.getCountryAdjacency(JPN);
-        if(adjacencyOfJPN.isEmpty()){
-            System.out.println("empty");
         }
-        for(String adjacency: adjacencyOfJPN){
-            if(CA == adjacency){
-                System.out.println("Yes");
-            }
-            else{
-                System.out.println("No");
-            }
-        }
-        */
-
     }
-}

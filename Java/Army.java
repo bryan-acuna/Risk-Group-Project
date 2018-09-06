@@ -13,8 +13,10 @@ public class Army {
     public int getNumberArmies(){
         return numberArmies;
     }
-    public int setNumberArmies(int V){
-        return numberArmies = V;
+
+
+    public void addArmy(){
+        numberArmies = numberArmies +1;
     }
 
     public void print(){

@@ -19,12 +19,12 @@ public class Map {
         countryToID = new HashMap<>();
         countriesInOrder = new LinkedList<>();
         countriesInOrder = graphObject.getCountriesInOrder();
-        Army fakeArmy = new Army();
 
         //System.out.println(countriesInOrder);
 
         for(int i =0; i < countriesInOrder.size(); i++){
             countryToID.put(countriesInOrder.get(i), i);
+            Army fakeArmy = new Army();
 
             //Just make a bunch of "indexes" to to the array to initialize all countries with objects of fakeArmy inside them
             countries.add(fakeArmy);
@@ -38,18 +38,20 @@ public class Map {
 
 
     //at some point will probably need Graph object as parameter for some checking
-    public void addArmy(String countryName, Graph graphObject, Player currentPlayer)
+    public void addArmy(String countryName, Player currentPlayer)
     {
         int countryID = countryToID.get(countryName);
 
+
+
         if(countriesAvailable > 0 && (countries.get(countryID)).getNumberArmies() == 0) {
             (countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
-            (countries.get(countryID)).setNumberArmies(  (countries.get(countryID)).getNumberArmies()+1 );
+            (countries.get(countryID)).addArmy();
             countriesAvailable--;
         }
         else if(countriesAvailable == 0){
             (countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
-            (countries.get(countryID)).setNumberArmies(  (countries.get(countryID)).getNumberArmies()+1 );
+            (countries.get(countryID)).addArmy();
         }
 
         else{
@@ -66,6 +68,41 @@ public class Map {
         }
     }
 
+    /*
+    Checks to see if game is over
+    continue looking is set to true so we run the loop atleast once. The if statement checks that since
+    all empty armies are
+     */
+    public boolean isGameOver(){
+        boolean gameOver = false;
+
+
+        boolean continueLooking = true;
+        int countryIterator = 1;
+        String samePlayer = countriesInOrder.get(0);
+        while(continueLooking){
+
+            if((countries.get(countryIterator)).getControllingPlayer() != "None" && countryIterator<(countries.size()) &&
+                    (countries.get(countryIterator)).getControllingPlayer() == ((countries.get(countryIterator-1)).getControllingPlayer())){
+                countryIterator++;
+                gameOver = true;
+                if(countryIterator == countries.size()-1){
+                    continueLooking = false;
+                }
+
+            }
+
+
+
+            else{
+                gameOver = false;
+                continueLooking = false;
+                //System.out.println(gameOver);
+
+            }
+        }
+        return gameOver;
+    }
     /*
     public void autoPopulate(int numberPlayers, Graph graphObject){
         int playerPieces;

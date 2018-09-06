@@ -8,6 +8,11 @@ public class Player {
         playerName = name;
     }
 
+
+    public void setPlayerName(String name){
+        playerName = name;
+    }
+
     public String getPlayerName(){
         return playerName;
     }
