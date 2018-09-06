@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.Random;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Map {
@@ -9,6 +6,8 @@ public class Map {
     private List<Army> countries;
     private int countriesAvailable;
     private HashMap<String, Integer> countryToID; //create a copy of the hasMap made before
+    List<String> countriesInOrder; //just used to be able to return the country from the countryID
+
 
     Map(){
 
@@ -17,15 +16,23 @@ public class Map {
     Map(Graph graphObject){
 
         countries = new LinkedList<>();
-        List<String> countriesInOrder = new LinkedList<>();
+        countryToID = new HashMap<>();
+        countriesInOrder = new LinkedList<>();
         countriesInOrder = graphObject.getCountriesInOrder();
         Army fakeArmy = new Army();
 
+        //System.out.println(countriesInOrder);
+
         for(int i =0; i < countriesInOrder.size(); i++){
             countryToID.put(countriesInOrder.get(i), i);
+
+            //Just make a bunch of "indexes" to to the array to initialize all countries with objects of fakeArmy inside them
             countries.add(fakeArmy);
+
+
             countriesAvailable++;
         }
+
 
     }
 
@@ -50,6 +57,16 @@ public class Map {
         }
     }
 
+    public void getMapStatus(){
+        for(int i =0; i < countries.size(); i++){
+            int numberOfArmies = (countries.get(i)).getNumberArmies();
+            String controllingPlayer = (countries.get(i)).getControllingPlayer();
+            String theCountry = countriesInOrder.get(i);
+            System.out.println(theCountry + " is controlled by " + controllingPlayer + " and has: " + numberOfArmies + " of armies");
+        }
+    }
+
+    /*
     public void autoPopulate(int numberPlayers, Graph graphObject){
         int playerPieces;
 
@@ -77,18 +94,30 @@ public class Map {
             array[i] = newPlayer;
         }
 
-        for(int i = 0; i < numberPlayers; i++){
+        for(int i = 0; i < countriesAvailable; i++){
             Random rand = new Random();
-            int randomNum = rand.nextInt((6 - 0) + 1) + 0;
+            List<Integer> countriesClaimed = new ArrayList<>();
+
+            //Finds a random index (which is a country), the element in that index contains an army object
+            Boolean loopFalse = true;
+            while(loopFalse){
+                //int randomNum = rand.nextInt((max - min) + 1) + min;
+                int randomNum = rand.nextInt((5) + 1);
 
 
+
+                if(!countriesClaimed.contains(randomNum)) {
+
+                    //write an if statement to make suer the selected randomNum is not repeated
+                    (countries.get(randomNum)).setControllingPlayer((array[randomNum]).getPlayerName());
+                    (countries.get(randomNum)).setNumberArmies((countries.get(randomNum)).getNumberArmies() + 1);
+                    System.out.println((array[randomNum]).getPlayerName() + " is claiming: " + countriesInOrder.get(i));
+
+                    countriesClaimed.add(randomNum);
+                    loopFalse = false;
+                }
+            }
         }
-
-
-
     }
-
-
-
-
+    */
 }

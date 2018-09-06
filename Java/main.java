@@ -41,8 +41,12 @@ public class main {
         myGame.printMapAdjacencies();
 
 
+        Map myGameMap = new Map(myGame);
+        myGameMap.getMapStatus();
 
 
+
+        /*
         List<String> adjacencyOfUSA = myGame.getCountryAdjacency(USA);
         if(adjacencyOfUSA.contains(CA)) {
             System.out.println("Yes");
@@ -73,6 +77,7 @@ public class main {
                 System.out.println("No");
             }
         }
+        */
 
     }
 }
