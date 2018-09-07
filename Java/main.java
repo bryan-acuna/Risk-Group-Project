@@ -62,6 +62,8 @@
 
             System.out.println(myGameMap.isGameOver());
 
+            mike.attack(myGameMap, myGame);
+
 
             /*
             List<String> adjacencyOfUSA = myGame.getCountryAdjacency(USA);
