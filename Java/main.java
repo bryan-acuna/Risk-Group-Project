@@ -58,7 +58,7 @@
             myGameMap.addArmy(CA, mike);
             myGameMap.addArmy(SA, mike);
 
-            //myGameMap.getMapStatus();
+            myGameMap.getMapStatus();
 
             System.out.println(myGameMap.isGameOver());
 
