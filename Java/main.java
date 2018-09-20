@@ -62,7 +62,7 @@
 
             System.out.println(myGameMap.isGameOver());
 
-            mike.attack(myGameMap, myGame);
+            //mike.attack(myGameMap, myGame);
 
 
             /*

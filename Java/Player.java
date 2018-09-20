@@ -19,10 +19,6 @@ public class Player {
         Scanner sc = new Scanner(System.in);
         String myCountry = sc.nextLine();
 
-
-
-
-
         sc.close();
 
     }

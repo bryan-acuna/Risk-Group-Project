@@ -49,12 +49,15 @@ public class Map {
             (countries.get(countryID)).addArmy();
             countriesAvailable--;
         }
-        else if(countriesAvailable == 0){
-            (countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
+        else if(countriesAvailable == 0 && (countries.get(countryID)).getControllingPlayer() == currentPlayer.getPlayerName() ){
+            //(countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
             (countries.get(countryID)).addArmy();
         }
+        else if(countriesAvailable == 0 && (countries.get(countryID)).getControllingPlayer() != currentPlayer.getPlayerName() ){
+            System.out.println("You are unable to add an army to a country you do no control");
+        }
 
-        else{
+        else if(countriesAvailable > 0 && (countries.get(countryID)).getNumberArmies() != 0){
             System.out.println("You must fill the remaining territories");
         }
     }
