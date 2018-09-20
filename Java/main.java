@@ -39,17 +39,18 @@
 
 
             myGame.printMapAdjacencies();
-
+            System.out.println("");
+            
+//            System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency("USA"));
+//            System.out.println("");
+            
 
             Map myGameMap = new Map(myGame);
+            
 
-
-
-
-
-            Player mike = new Player("Mike");
-            Player bryan = new Player("Bryan");
-            Player brandon = new Player("Brandon");
+            Player mike = new Player("Mike", 1);
+            Player bryan = new Player("Bryan", 2);
+            Player brandon = new Player("Brandon", 3);
 
             myGameMap.addArmy(USA, mike);
             myGameMap.addArmy(AFICA, mike);
@@ -58,7 +59,7 @@
             myGameMap.addArmy(CA, mike);
             myGameMap.addArmy(SA, mike);
 
-            //myGameMap.getMapStatus();
+            myGameMap.getMapStatus();
 
             System.out.println(myGameMap.isGameOver());
 

@@ -1,8 +1,12 @@
 public class Army {
     String controllingPlayer;
     int numberArmies;
-
-
+    
+    Army(){
+        numberArmies = 0;
+        controllingPlayer = "None";
+    }
+    
     public String getControllingPlayer(){
         return controllingPlayer;
     }
@@ -14,7 +18,6 @@ public class Army {
         return numberArmies;
     }
 
-
     public void addArmy(){
         numberArmies = numberArmies +1;
     }
@@ -24,11 +27,4 @@ public class Army {
             System.out.println("there is an Army here");
         }
     }
-
-    Army(){
-        numberArmies = 0;
-        controllingPlayer = "None";
-    }
-
-
 }
