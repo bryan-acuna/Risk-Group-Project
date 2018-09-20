@@ -19,7 +19,7 @@ public class Graph{
         //we have to use a linkedList to keep track of countries in order, see print Map adjacencies
     }
 
-//Map functions
+    //Map functions
     /*
     The idea here is that we have a known amount of countries given in the form of @nodes. First we call the method
     createInitialMap(), this will create a 2d linkedList which we call @listOfCountries. Each index of the list will
@@ -80,7 +80,7 @@ public class Graph{
 
 
 
-//Getters
+    //Getters
     public int getCountryID(String countryName){
         int countryID = myVertices.get(countryName);
         return countryID;

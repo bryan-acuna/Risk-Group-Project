@@ -6,7 +6,7 @@ public class Map {
     private List<Army> countries;
     private int countriesAvailable;
     private HashMap<String, Integer> countryToID; //create a copy of the hasMap made before
-    List<String> countriesInOrder; //just used to be able to return the country from the countryID
+    private List<String> countriesInOrder; //just used to be able to return the country from the countryID
 
 
     Map(){

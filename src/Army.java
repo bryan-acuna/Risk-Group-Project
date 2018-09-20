@@ -1,12 +1,12 @@
 public class Army {
-    String controllingPlayer;
-    int numberArmies;
-    
+    private String controllingPlayer;
+    private int numberArmies;
+
     Army(){
         numberArmies = 0;
         controllingPlayer = "None";
     }
-    
+
     public String getControllingPlayer(){
         return controllingPlayer;
     }
