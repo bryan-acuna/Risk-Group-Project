@@ -60,6 +60,7 @@ public class App
         myGameMap.getMapStatus();
 
         System.out.println(myGameMap.isGameOver());
+		
 
         //mike.attack(myGameMap, myGame);
 
