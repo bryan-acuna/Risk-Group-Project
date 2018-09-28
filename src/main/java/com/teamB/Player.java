@@ -6,13 +6,14 @@ public class Player {
     private int playerID;
 
 
+
     Player(){
         playerName = "Robot";
     }
     Player(String name, int ID){
         playerName = name;
         playerID = ID;
-        //increasePlayerCount();
+         //increasePlayerCount();
     }
 
     //Sets player name
@@ -26,6 +27,9 @@ public class Player {
     }
 
 
+
+
+
     //Sets player ID
     public void setPlayerID(int ID){
         playerID = ID;
@@ -37,36 +41,38 @@ public class Player {
     }
 
 
-    public void attack(Map gameMap, Graph myGame){
-        System.out.println("Select a country you own: ");
-        Scanner sc = new Scanner(System.in);
-        String myCountry = sc.nextLine();
+    //The problem with this is that we need to a roll dice per army, and b if win, gain control of country
 
-        System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
-
-        System.out.println("Which country would you like to attack?");
-        String countryAttacking = sc.nextLine();
-
-
-        System.out.println("How many armies would you like to attack with?");
-        while (!sc.hasNextInt())
-            sc.next();
-        int armiesAttacking = sc.nextInt();
-
-//        if(diceroll1(armiesAttacking) > diceroll2()) {
+//    public void attack(Map gameMap, Graph myGame, Dice theDie){
+//        System.out.println("Select a country you own: ");
+//        Scanner sc = new Scanner(System.in);
+//        String myCountry = sc.nextLine();
+//
+//        System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
+//
+//        System.out.println("Which country would you like to attack?");
+//        String countryAttacking = sc.nextLine();
+//
+//
+//        System.out.println("How many armies would you like to attack with?");
+//        while (!sc.hasNextInt())
+//            sc.next();
+//        int armiesAttacking = sc.nextInt();
+//
+//        if(theDie.rollDice() > theDie.rollDice()) {
 //        	System.out.println("Your army has won!");
-
-//        	take control of countrySelected;
+//
+//        	//take control of countrySelected;
 //        }
-//        else if(diceroll1(armiesAttacking) <= diceroll2()) {
+//        else if(theDie.rollDice() <= theDie.rollDice()) {
 //        	System.out.println("Your army has lost!");
-
-//        	subtract one army from yourself
+//
+//        	//subtract one army from yourself
 //        }
-
-        sc.close();
-
-    }
+//
+//        sc.close();
+//
+//    }
 
 //    public int skipTurn(Player currentPlayer) {
 //        int nextID;
