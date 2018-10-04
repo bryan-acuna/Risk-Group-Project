@@ -8,6 +8,10 @@ public class Army {
         numberArmies = 0;
         controllingPlayer = "None";
     }
+    
+//    Army(String name, int players){
+//    	
+//    }
 
     public String getControllingPlayer(){
         return controllingPlayer;
