@@ -25,7 +25,11 @@ public class Army {
     }
 
     public void addArmy(){
-        numberArmies = numberArmies +1;
+        numberArmies = numberArmies + 1;
+    }
+    
+    public void subArmy(){
+        numberArmies = numberArmies - 1;
     }
 
     public void print(){
