@@ -8,9 +8,9 @@ public class Army {
         numberArmies = 0;
         controllingPlayer = "None";
     }
-    
+
 //    Army(String name, int players){
-//    	
+//
 //    }
 
     public String getControllingPlayer(){
@@ -27,7 +27,7 @@ public class Army {
     public void addArmy(){
         numberArmies = numberArmies + 1;
     }
-    
+
     public void subArmy(){
         numberArmies = numberArmies - 1;
     }
