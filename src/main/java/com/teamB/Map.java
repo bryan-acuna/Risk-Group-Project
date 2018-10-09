@@ -1,7 +1,7 @@
 package com.teamB;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 public class Map {
 
@@ -37,6 +37,9 @@ public class Map {
 
 
     }
+    public List<String> getCountriesInOrder(){
+        return countriesInOrder;
+    }
 
 
     //at some point will probably need Graph object as parameter for some checking
@@ -63,20 +66,20 @@ public class Map {
             System.out.println("You must fill the remaining territories");
         }
     }
-    
+
     public void subArmy(String countryName, Player currentPlayer, Player otherPlayer)
     {
-    	int countryID = countryToID.get(countryName);
-    	
-    	(countries.get(countryID)).subArmy();
-    	
-    	if((countries.get(countryID)).getNumberArmies() == 0) {
-    		System.out.println("You have lost your army. Defender takes over.");
-    		countriesAvailable++;
-    		addArmy(countryName, otherPlayer);
-    	}
+        int countryID = countryToID.get(countryName);
+
+        (countries.get(countryID)).subArmy();
+
+        if((countries.get(countryID)).getNumberArmies() == 0) {
+            System.out.println("You have lost your army. Defender takes over.");
+            countriesAvailable++;
+            addArmy(countryName, otherPlayer);
+        }
     }
-    
+
     public List<Army> getMap(){
         return countries;
     }
@@ -129,6 +132,8 @@ public class Map {
         }
         return gameOver;
     }
+
+
 //    public int getCountriesAvailable(){
 //        //return
 //    }
