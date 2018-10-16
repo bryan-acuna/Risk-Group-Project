@@ -19,7 +19,9 @@ public class Army {
     public void setControllingPlayer(String V){
         this.controllingPlayer = V;
     }
-
+    public void setNumberArmies(int v){
+        numberArmies = v;
+    }
     public int getNumberArmies(){
         return numberArmies;
     }
@@ -33,8 +35,12 @@ public class Army {
     }
 
     public void print(){
-        if(controllingPlayer != "None") {
-            System.out.println("there is an Army here");
+        if(controllingPlayer == "None") {
+            System.out.println("No armies here");
+        }
+        else{
+            System.out.println("here is the controller:" + getControllingPlayer()+ " and the number of armies: " + getNumberArmies());
+
         }
     }
 }

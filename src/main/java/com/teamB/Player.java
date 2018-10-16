@@ -5,6 +5,8 @@ import java.util.*;
 public class Player {
     private String playerName;
     private int playerID;
+    private int armiesToPlace;
+
 
     Player(){
         playerName = "Robot";
@@ -34,6 +36,14 @@ public class Player {
     //Gets player ID
     public int getPlayerID(){
         return playerID;
+    }
+
+    public int getArmiesToPlace(){
+        return armiesToPlace;
+    }
+
+    public void addArmiesToPlace(int n){
+        armiesToPlace += n;
     }
 
 
