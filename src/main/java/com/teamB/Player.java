@@ -6,6 +6,7 @@ public class Player {
     private String playerName;
     private int playerID;
     private int armiesToPlace;
+    private List<Card> cardsInHand;
 
 
     Player(){
@@ -15,7 +16,20 @@ public class Player {
     Player(String name, int ID){
         playerName = name;
         playerID = ID;
+        cardsInHand = new ArrayList<>();
         //increasePlayerCount();
+    }
+
+    public void takeCardFromDeck(Card cardTaken){
+        cardsInHand.add(cardTaken);
+    }
+    public List<Card> getCardsInHand(){
+        return cardsInHand;
+    }
+    public void printCardsInHard(){
+        for(int i=0; i < cardsInHand.size(); i++){
+            cardsInHand.get(i).printCardValues();
+        }
     }
 
     //Sets player name

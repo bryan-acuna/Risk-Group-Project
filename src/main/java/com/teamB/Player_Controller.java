@@ -124,47 +124,52 @@ public class Player_Controller {
             }
         }
     }
-
-
     public void createPlayer(String name, int playerNumber){
         Player newPlayer = new Player(name, playerNumber);
         playerList.add(newPlayer);
     }
-
     public List getPlayerList(){
         return playerList;
     }
 
+    public void playGame(){
+        while(!gameMap.isGameOver()){
+            //playTheGame
+        }
+
+    }
+
 
     public static void main(String []args){
-        String key ="";
-        String secKey = "";
-
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            input = new FileInputStream("config.properties");
-
-            // load a properties file
-            prop.load(input);
-
-            // get the property value and print it out
-            key = prop.getProperty("key");
-            secKey = prop.getProperty("secKey");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        UploadObject myUpload = new UploadObject();
-        String filePath = "fileToS3";
-        myUpload.upload(key, secKey,"mikebitest05012018", "gameStatus",  filePath);
+        //uncomment when done testing
+//        String key ="";
+//        String secKey = "";
+//
+//        Properties prop = new Properties();
+//        InputStream input = null;
+//        try {
+//            input = new FileInputStream("config.properties");
+//
+//            // load a properties file
+//            prop.load(input);
+//
+//            // get the property value and print it out
+//            key = prop.getProperty("key");
+//            secKey = prop.getProperty("secKey");
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        } finally {
+//            if (input != null) {
+//                try {
+//                    input.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        UploadObject myUpload = new UploadObject();
+//        String filePath = "fileToS3";
+//        myUpload.upload(key, secKey,"mikebitest05012018", "gameStatus",  filePath);
 //
 //        String USA = "USA";
 //        String JPN = "JPN";
@@ -189,6 +194,7 @@ public class Player_Controller {
 //        myGame.addEdge(USA, JPN);
 //
 //        myGame.printMapAdjacencies();
+//        Deck theDeck = new Deck();
 //
 //
 //        Map myGameMap = new Map(myGame);
