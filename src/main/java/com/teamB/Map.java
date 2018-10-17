@@ -43,7 +43,8 @@ public class Map {
 
 
     //at some point will probably need Graph object as parameter for some checking
-    public void addArmy(String countryName, Player currentPlayer)
+
+    public boolean addArmy(String countryName, Player currentPlayer)
     {
         int countryID = countryToID.get(countryName);
 
@@ -53,18 +54,34 @@ public class Map {
             (countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
             (countries.get(countryID)).addArmy();
             countriesAvailable--;
+            return true;
         }
         else if(countriesAvailable == 0 && (countries.get(countryID)).getControllingPlayer() == currentPlayer.getPlayerName() ){
             //(countries.get(countryID)).setControllingPlayer(currentPlayer.getPlayerName());
             (countries.get(countryID)).addArmy();
+            countriesAvailable--;
+            return true;
         }
         else if(countriesAvailable == 0 && (countries.get(countryID)).getControllingPlayer() != currentPlayer.getPlayerName() ){
             System.out.println("You are unable to add an army to a country you do not control");
+            return false;
         }
 
         else if(countriesAvailable > 0 && (countries.get(countryID)).getNumberArmies() != 0){
             System.out.println("You must fill the remaining territories");
+            return false;
         }
+        else{
+            (countries.get(countryID)).addArmy();
+            return true;
+        }
+    }
+
+    public void setCountriesAvailable(int countriesAvailable) {
+        this.countriesAvailable = countriesAvailable;
+    }
+    public int getCountriesAvailable(){
+        return countriesAvailable;
     }
 
     public void subArmy(String countryName, Player currentPlayer, Player otherPlayer)

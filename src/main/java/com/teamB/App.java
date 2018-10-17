@@ -67,7 +67,7 @@ public class App
 
 
 
-        //mike.attack(myGameMap, myGame);
+        
 
 
             /*

@@ -18,11 +18,42 @@ public class Player_Controller {
 
         }
     }
+    /*
+     * Gives each player a number of armies based on number of players
+     *
+     * returns the number given to each player
+     * */
+    public int givePlayersStartingArmies(){
+        int numberPlayers = playerList.size();
+        int numArmiesEach = 0;
+        //just for testing easier
+        if(numberPlayers == 2){
+            numArmiesEach = 3;
+        }
+        else if(numberPlayers == 3){
+            numArmiesEach = 35;
+        }
+        else if(numberPlayers == 4){
+            numArmiesEach = 30;
+        }
+        else if(numberPlayers == 5){
+            numArmiesEach = 25;
+        }
+        else{
+            numArmiesEach = 20;
+        }
+        for(int i =0; i < playerList.size(); i++){
+            (playerList.get(i)).addArmiesToPlace(numArmiesEach);
+        }
+        return numArmiesEach;
+    }
 
-    public void fillMap(int numCountries){
 
+    public void fillMap(){
+        int numberArmiesEach = givePlayersStartingArmies();
+        int armiesToPlace = numberArmiesEach*playerList.size();
 
-        for(int i =0; i < numCountries; i++){
+        for(int i =0; i < armiesToPlace; i++){
             int playerID = i% playerList.size();
             System.out.println("Choose a country to add an army to " + (playerList.get(playerID)).getPlayerName());
 
@@ -37,15 +68,56 @@ public class Player_Controller {
                 else{
                     System.out.println("Country does not exist");
                 }
+
+            }
+            Player currentPlayer = playerList.get(playerID);
+            boolean countryAdded = false;
+            while(countryAdded == false) {
+                if (gameMap.addArmy(countryToClaim, currentPlayer)) {
+                    countryAdded = true;
+                }
+                else{
+                    gameMap.addArmy(countryToClaim, currentPlayer);
+                    System.out.println("Please choose another country to claim");
+                    Scanner sc = new Scanner(System.in);
+                    countryToClaim = (sc.nextLine()).toUpperCase();
+                }
             }
 
+            System.out.println("Do you want to undo your action? (y/n)");
+            String undoAnswer = "";
+            Scanner sc = new Scanner(System.in);
+            undoAnswer = (sc.nextLine()).toUpperCase();
+            //System.out.println("value of undoAnswer" +undoAnswer);
+            if(undoAnswer.equals("Y")){
+                i--;
+                gameMap.setCountriesAvailable(gameMap.getCountriesAvailable()+1);
 
-            Player currentPlayer = playerList.get(playerID);
-            gameMap.addArmy(countryToClaim, currentPlayer );
+                //Idea is to use the player input of which country they selected
+                //find the army object inside the country
+                //Then see if it is just one 1 army, in which case the undo will remove
+                //ownership and revert the country back to no one owns it
+                //Or if there are more than 1 army, just remove one army from the country
+                HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
+                int countryID = countryIDFromString.get(countryToClaim);
+                List<Army> countries = gameMap.getMap();
 
+
+                Army armiesInCountry = countries.get(countryID);
+
+                //System.out.println("here is the country they are trying to undo:" +countryToClaim);
+                //armiesInCountry.print();
+
+                if(armiesInCountry.getNumberArmies() == 1){
+                    armiesInCountry.setControllingPlayer("None");
+                    armiesInCountry.setNumberArmies(0);
+                }
+                else{
+                    armiesInCountry.subArmy();
+                }
+
+            }
         }
-
-
     }
 
 
@@ -77,33 +149,33 @@ public class Player_Controller {
         myGame.bindCountriesToNumbers("EU");
 
 
-        myGame.bindCountriesToNumbers("CA");
-        myGame.bindCountriesToNumbers("SA");
-        myGame.bindCountriesToNumbers("AFRICA");
+        //myGame.bindCountriesToNumbers("CA");
+        //myGame.bindCountriesToNumbers("SA");
+        //myGame.bindCountriesToNumbers("AFRICA");
 
 
-        myGame.addEdge(USA, CA);
-        myGame.addEdge(USA, SA);
-        myGame.addEdge(EU, AFICA);
+        //myGame.addEdge(USA, CA);
+        //myGame.addEdge(USA, SA);
+        //myGame.addEdge(EU, AFICA);
 
 
         myGame.printMapAdjacencies();
 
 
-//            System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency("USA"));
-//            System.out.println("");
 
 
         Map myGameMap = new Map(myGame);
         Player_Controller gameController = new Player_Controller(2, myGameMap);
         //Show who the layers are
-        for(int i =0; i < 2; i++){
+        for(int i =0; i < gameController.playerList.size(); i++){
             List<Player> test = gameController.getPlayerList();
-
             System.out.println("Player " + i+ " is " + (test.get(i)).getPlayerName());
         }
 
-        gameController.fillMap(6);
+        //allows players to claim countries and add initial armies to them
+        gameController.fillMap();
+
+        //prints status of map so far
         myGameMap.getMapStatus();
 
     }
