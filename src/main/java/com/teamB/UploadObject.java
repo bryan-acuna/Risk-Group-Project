@@ -5,6 +5,7 @@ package com.teamB;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -19,6 +20,33 @@ public class UploadObject {
     UploadObject(){
 
     }
+
+    public static String scan_For_Key_From_Local_File(){
+        try{
+
+            Scanner sc = new Scanner(new File("C:\\Users\\acer\\Desktop\\propertiesfolder\\propertyFolder.txt"));
+            return sc.nextLine();
+        }
+        catch(Exception e){
+            System.out.println("file not found");
+        }
+        return "";
+    }
+    public static String scan_For_Secret_Key_From_Local_File(){
+        try{
+
+            Scanner sc = new Scanner(new File("C:\\Users\\acer\\Desktop\\propertiesfolder\\propertyFolder.txt"));
+            sc.nextLine();
+            return sc.nextLine();
+
+        }
+        catch(Exception e){
+            System.out.println("file not found");
+        }
+        return "";
+    }
+
+
     public static void upload(String accessKey, String secretKey, String nameOfBucket, String whatToNameFile, String pathToFile){
         //(String accessKey, String secretKey, String nameOfBucket, String whatToNameFile, String )
         BasicAWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);

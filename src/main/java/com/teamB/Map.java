@@ -76,6 +76,15 @@ public class Map {
             return true;
         }
     }
+    public void removeOneArmy(String countryName){
+        int countryID = countryToID.get(countryName);
+        (countries.get(countryID)).subArmy();
+    }
+
+    public void TakeOver(String countryToClaim, String strongerPlayer){
+        int countryID = countryToID.get(countryToClaim);
+        (countries.get(countryID)).setControllingPlayer(strongerPlayer);
+    }
 
     public void setCountriesAvailable(int countriesAvailable) {
         this.countriesAvailable = countriesAvailable;

@@ -49,18 +49,21 @@ public class Player {
 
     //The problem with this is that we need to a roll dice per army, and b if win, gain control of country
 
-    public void attack(Map gameMap, Graph myGame, Dice theDie, Player attacker, Player defender){
+    public boolean attack(Map gameMap, Graph myGame, Dice theDie, Player attacker, Player defender){
         System.out.println("Select a country you own: ");
         Scanner sc = new Scanner(System.in);
-        String myCountry = sc.nextLine();
+        String myCountry = sc.nextLine().toUpperCase();
 
 
         System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
 
 
         System.out.println("Which country would you like to attack?");
-        String countryAttacking = sc.nextLine();
+        String countryAttacking = sc.nextLine().toUpperCase();
 
+        if(!myGame.getCountryAdjacency(myCountry).contains(countryAttacking)){
+            return false;
+        }
 
         //armies the attacker uses
         System.out.println("How many armies would you like to attack with?");
@@ -97,16 +100,21 @@ public class Player {
             System.out.println("Your army has won!");
 
             //take control of country
+            gameMap.removeOneArmy(myCountry);
             gameMap.addArmy(countryAttacking, attacker);
+            gameMap.TakeOver(countryAttacking, attacker.getPlayerName());
+
         }
         else if(attTopNum <= defTopNum) {
             System.out.println("Your army has lost!");
 
             //subtract one army from yourself
             gameMap.subArmy(countryAttacking, attacker, defender);
+            gameMap.TakeOver(myCountry, defender.getPlayerName());
         }
 
         sc.close();
+        return true;
 
     }
 

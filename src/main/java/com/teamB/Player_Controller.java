@@ -132,14 +132,27 @@ public class Player_Controller {
 
 
     public static void main(String []args){
+        //Uncomment when done with addingFeatures
+//        String key ="";
+//        String secKey = "";
+//
+//        UploadObject myUpload = new UploadObject();
+//        key = myUpload.scan_For_Key_From_Local_File();
+//        secKey = myUpload.scan_For_Secret_Key_From_Local_File();
+//
+//        String filePath = "fileToS3";
+//        System.out.println(key + secKey);
+//
+//
+//
+//        myUpload.upload(key, secKey,"mikebitest05012018", "gameStatus",  filePath);
+
         String USA = "USA";
         String JPN = "JPN";
         String EU = "EU";
-
-
         String CA = "CA";
         String SA = "SA";
-        String AFICA = "AFRICA";
+        String AFRICA = "AFRICA";
 
 
         Graph myGame = new Graph();
@@ -147,36 +160,50 @@ public class Player_Controller {
         myGame.bindCountriesToNumbers("USA");
         myGame.bindCountriesToNumbers("JPN");
         myGame.bindCountriesToNumbers("EU");
+//        myGame.bindCountriesToNumbers("CA");
+//        myGame.bindCountriesToNumbers("SA");
+//        myGame.bindCountriesToNumbers("AFRICA");
+//        myGame.addEdge(USA, CA);
+//        myGame.addEdge(USA, SA);
+//        myGame.addEdge(EU, AFRICA);
 
-
-        //myGame.bindCountriesToNumbers("CA");
-        //myGame.bindCountriesToNumbers("SA");
-        //myGame.bindCountriesToNumbers("AFRICA");
-
-
-        //myGame.addEdge(USA, CA);
-        //myGame.addEdge(USA, SA);
-        //myGame.addEdge(EU, AFICA);
-
+        myGame.addEdge(USA, JPN);
 
         myGame.printMapAdjacencies();
 
 
-
-
         Map myGameMap = new Map(myGame);
-        Player_Controller gameController = new Player_Controller(2, myGameMap);
-        //Show who the layers are
-        for(int i =0; i < gameController.playerList.size(); i++){
-            List<Player> test = gameController.getPlayerList();
-            System.out.println("Player " + i+ " is " + (test.get(i)).getPlayerName());
-        }
+        Player bryan = new Player("Bryan", 0);
+        Player jake = new Player("Jake", 1);
+        Dice theDie = new Dice();
 
-        //allows players to claim countries and add initial armies to them
-        gameController.fillMap();
+        myGameMap.addArmy(USA, bryan);
+        myGameMap.addArmy(EU, bryan);
+        myGameMap.addArmy(JPN, jake);
+        myGameMap.addArmy(USA, bryan);
 
-        //prints status of map so far
         myGameMap.getMapStatus();
+
+        bryan.attack(myGameMap, myGame, theDie, bryan, jake);
+        System.out.println();
+
+        myGameMap.getMapStatus();
+
+
+
+
+//        Player_Controller gameController = new Player_Controller(2, myGameMap);
+//        //Show who the layers are
+//        for(int i =0; i < gameController.playerList.size(); i++){
+//            List<Player> test = gameController.getPlayerList();
+//            System.out.println("Player " + i+ " is " + (test.get(i)).getPlayerName());
+//        }
+//
+//        //allows players to claim countries and add initial armies to them
+//        gameController.fillMap();
+//
+//        //prints status of map so far
+//        myGameMap.getMapStatus();
 
     }
 
