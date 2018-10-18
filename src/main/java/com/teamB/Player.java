@@ -3,12 +3,27 @@ package com.teamB;
 import java.util.*;
 
 
-public class Player {
+public class Player implements notify {
     private String playerName;
     private int playerID;
     private int armiesToPlace;
     private List<Card> cardsInHand;
     private int credits;
+    //Graph graphObject;
+
+    //Map mapObject = new Map(graphObject);
+
+
+    public void underAttack(Player player){
+        System.out.println(player + "you are under attack");
+    }
+
+
+    public String ownerCountry(String mapObject){
+
+        //int countryID = mapObject();
+        return "Yes";
+    }
 
 
     Player(){
@@ -151,6 +166,13 @@ public class Player {
 
         System.out.println("Which country would you like to attack?");
         String countryAttacking = sc.nextLine().toUpperCase();
+
+        //Check if who owns that country
+
+
+        //Notify that player that his country is being attacked
+
+
 
         if(!myGame.getCountryAdjacency(myCountry).contains(countryAttacking)){
             return false;
