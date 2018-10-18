@@ -50,7 +50,7 @@ public class App
         Player mike = new Player("Mike", 1);
         Player bryan = new Player("Bryan", 2);
         Player brandon = new Player("Brandon", 3);
-        Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck);
+        Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck, myGame);
 
         myGameMap.addArmy(USA, mike);
         myGameMap.addArmy(AFICA, mike);

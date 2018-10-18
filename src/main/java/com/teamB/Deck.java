@@ -12,8 +12,8 @@ public class Deck {
             Card newCard = new Card(armyPictures(j) ,countryPicture(i) );
             theDeck.add(newCard);
         }
-        Card wildCard = new Card("WILD", countryPicture(5));
-        Card wildCard2 = new Card("WILD", countryPicture(6));
+        Card wildCard = new Card("WILD", countryPicture(4));
+        Card wildCard2 = new Card("WILD", countryPicture(5));
 
         theDeck.add(wildCard);
         theDeck.add(wildCard2);
@@ -38,6 +38,12 @@ public class Deck {
     public void drawCardFromDeck(Player playerReceivingCard){
         playerReceivingCard.takeCardFromDeck(theDeck.get(0));
         theDeck.remove(0);
+    }
+
+    public void undoDrawCardFromDeck(Player playerUndoing){
+        int sizeOfHand = playerUndoing.getCardsInHand().size();
+        theDeck.add(playerUndoing.getCardsInHand().get(sizeOfHand-1));
+        playerUndoing.undoDrawCard();
     }
 
     public static void main(String[] args){

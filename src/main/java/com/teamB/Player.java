@@ -9,7 +9,10 @@ public class Player {
     private int armiesToPlace;
     private List<Card> cardsInHand;
     private int credits;
-
+    private int numberOfUndos;
+    private List<Army> countryStates; //a way to keep track of the state of a defending country
+                                    //and be able to revert back to those states if undo
+    private int []attackerAndDefenderCountryID;
 
     Player(){
         playerName = "Robot";
@@ -20,7 +23,23 @@ public class Player {
         playerID = ID;
         cardsInHand = new ArrayList<>();
         credits =0;
+        numberOfUndos = 0;
         //increasePlayerCount();
+    }
+
+    public int[] getAttackerAndDefender(){
+        return attackerAndDefenderCountryID;
+    }
+    public void buyUndo(){
+        numberOfUndos += 1;
+    }
+
+    public void useUndo(){
+        numberOfUndos -= 1;
+    }
+
+    public int getNumberOfUndos(){
+        return numberOfUndos;
     }
 
     public void tradeInCards(){
@@ -91,6 +110,11 @@ public class Player {
     public void takeCardFromDeck(Card cardTaken){
         cardsInHand.add(cardTaken);
     }
+    public void undoDrawCard(){
+        cardsInHand.remove(cardsInHand.size()-1);
+    }
+
+
     public List<Card> getCardsInHand(){
         return cardsInHand;
     }
@@ -137,20 +161,51 @@ public class Player {
         armiesToPlace += n;
     }
 
+    public List<Army> getCountryStates(){
+        return countryStates;
+    }
 
     //The problem with this is that we need to a roll dice per army, and b if win, gain control of country
 
-    public boolean attack(Map gameMap, Graph myGame, Dice theDie, Player attacker, Player defender){
+    public boolean attack(Map gameMap, Graph myGame, Dice theDie, Player attacker, List<Player> playerList, String whoWon){
+        countryStates.clear();
+
+
+
         System.out.println("Select a country you own: ");
         Scanner sc = new Scanner(System.in);
         String myCountry = sc.nextLine().toUpperCase();
 
 
+        attackerAndDefenderCountryID[0] = gameMap.getHashMap().get(myCountry);
+
+
+
         System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
-
-
         System.out.println("Which country would you like to attack?");
         String countryAttacking = sc.nextLine().toUpperCase();
+
+
+
+        //Find the countryID from the country they want to attack
+        //get the player name (string) who owns it and he will be defender
+        //must find who it is though the playerList
+        Player defender = new Player();
+        int countryID = gameMap.getHashMap().get(countryAttacking);
+        attackerAndDefenderCountryID[1] = countryID;
+        String defenderName = gameMap.getMap().get(countryID).getControllingPlayer();
+        PopUpNotify.infoBox(defenderName+" are under attack!", "Notify Player");
+        //We have the defenders name, now we just need to find the player object
+        //in the arrayList
+        for(int i =0; i < playerList.size(); i++){
+            if(defenderName == playerList.get(i).getPlayerName()){
+                defender = playerList.get(i);
+            }
+        }
+
+
+        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(myCountry)));
+        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(countryAttacking)));
 
         if(!myGame.getCountryAdjacency(myCountry).contains(countryAttacking)){
             return false;
@@ -167,6 +222,7 @@ public class Player {
         while (!sc.hasNextInt())
             sc.next();
         int armiesDefending = sc.nextInt();
+        PopUpNotify.infoBox("you are being attacked: " + defenderName, "Notfiy Player");
 
         //Highest dice roll for attacker
         int attTopNum = 0;
@@ -189,6 +245,8 @@ public class Player {
 
         if(attTopNum > defTopNum) {
             System.out.println("Your army has won!");
+            whoWon = "ATTACKER";
+
 
             //take control of country
             gameMap.removeOneArmy(myCountry);
@@ -198,6 +256,7 @@ public class Player {
         }
         else if(attTopNum <= defTopNum) {
             System.out.println("Your army has lost!");
+            whoWon = "DEFENDER";
 
             //subtract one army from yourself
             gameMap.subArmy(countryAttacking, attacker, defender);
