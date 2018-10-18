@@ -10,18 +10,20 @@ import java.util.*;
 public class Player_Controller {
     private List<Player> playerList;
     private Map gameMap;
+    private Deck theDeck;
 
 
-    Player_Controller(int playerNum, Map gameMap){
+    Player_Controller(int playerNum, Map gameMap, Deck theDeck){
         playerList = new LinkedList();
         this.gameMap = gameMap;
+        this.theDeck = theDeck;
         for(int i =0; i < playerNum; i++){
             System.out.println("Who is player " + i);
             Scanner sc = new Scanner(System.in);
             String playerName = sc.nextLine();
             createPlayer(playerName, i);
-
         }
+
     }
     /*
      * Gives each player a number of armies based on number of players
@@ -94,33 +96,37 @@ public class Player_Controller {
             Scanner sc = new Scanner(System.in);
             undoAnswer = (sc.nextLine()).toUpperCase();
             //System.out.println("value of undoAnswer" +undoAnswer);
-            if(undoAnswer.equals("Y")){
-                i--;
-                gameMap.setCountriesAvailable(gameMap.getCountriesAvailable()+1);
+            if(playerList.get(playerID).getCredits() > 0 ) {
+                if (undoAnswer.equals("Y")) {
+                    i--;
+                    gameMap.setCountriesAvailable(gameMap.getCountriesAvailable() + 1);
 
-                //Idea is to use the player input of which country they selected
-                //find the army object inside the country
-                //Then see if it is just one 1 army, in which case the undo will remove
-                //ownership and revert the country back to no one owns it
-                //Or if there are more than 1 army, just remove one army from the country
-                HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
-                int countryID = countryIDFromString.get(countryToClaim);
-                List<Army> countries = gameMap.getMap();
+                    //Idea is to use the player input of which country they selected
+                    //find the army object inside the country
+                    //Then see if it is just one 1 army, in which case the undo will remove
+                    //ownership and revert the country back to no one owns it
+                    //Or if there are more than 1 army, just remove one army from the country
+                    HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
+                    int countryID = countryIDFromString.get(countryToClaim);
+                    List<Army> countries = gameMap.getMap();
 
 
-                Army armiesInCountry = countries.get(countryID);
+                    Army armiesInCountry = countries.get(countryID);
 
-                //System.out.println("here is the country they are trying to undo:" +countryToClaim);
-                //armiesInCountry.print();
+                    //System.out.println("here is the country they are trying to undo:" +countryToClaim);
+                    //armiesInCountry.print();
 
-                if(armiesInCountry.getNumberArmies() == 1){
-                    armiesInCountry.setControllingPlayer("None");
-                    armiesInCountry.setNumberArmies(0);
+                    if (armiesInCountry.getNumberArmies() == 1) {
+                        armiesInCountry.setControllingPlayer("None");
+                        armiesInCountry.setNumberArmies(0);
+                    } else {
+                        armiesInCountry.subArmy();
+                    }
+
                 }
-                else{
-                    armiesInCountry.subArmy();
-                }
-
+            }
+            else{
+                System.out.println("Insufficient credits for undo, moving to next player");
             }
         }
     }
@@ -217,7 +223,7 @@ public class Player_Controller {
 //
 //
 //
-////        Player_Controller gameController = new Player_Controller(2, myGameMap);
+////        Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck);
 ////        //Show who the layers are
 ////        for(int i =0; i < gameController.playerList.size(); i++){
 ////            List<Player> test = gameController.getPlayerList();

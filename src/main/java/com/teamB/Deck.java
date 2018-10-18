@@ -7,15 +7,21 @@ public class Deck {
     //In the future, add all the countries to the countryPicture array, and change i to 42
     Deck(){
         theDeck = new ArrayList<>();
-        for(int i =0; i < 6; i++){
+        for(int i =0; i < 4; i++){
             int j = i%3;
             Card newCard = new Card(armyPictures(j) ,countryPicture(i) );
             theDeck.add(newCard);
         }
+        Card wildCard = new Card("WILD", countryPicture(5));
+        Card wildCard2 = new Card("WILD", countryPicture(6));
+
+        theDeck.add(wildCard);
+        theDeck.add(wildCard2);
     }
 
     private static String armyPictures(int i){
         String []armyTypes = {"INFANTRY", "CALVARY","ARTILLERY"};
+
         return armyTypes[i];
     }
     private static String countryPicture(int i){
@@ -29,7 +35,7 @@ public class Deck {
         }
     }
 
-    public void giveCard(Player playerReceivingCard){
+    public void drawCardFromDeck(Player playerReceivingCard){
         playerReceivingCard.takeCardFromDeck(theDeck.get(0));
         theDeck.remove(0);
     }

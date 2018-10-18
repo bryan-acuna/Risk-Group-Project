@@ -2,11 +2,13 @@ package com.teamB;
 
 import java.util.*;
 
+
 public class Player {
     private String playerName;
     private int playerID;
     private int armiesToPlace;
     private List<Card> cardsInHand;
+    private int credits;
 
 
     Player(){
@@ -17,8 +19,74 @@ public class Player {
         playerName = name;
         playerID = ID;
         cardsInHand = new ArrayList<>();
+        credits =0;
         //increasePlayerCount();
     }
+
+    public void tradeInCards(){
+        if(cardsInHand.size() > 3) {
+            System.out.println("Here are the cards you have: ");
+            printCardsInHard();
+            System.out.println("which would you like to trade in? Enter the index values of the cards");
+            Scanner sc = new Scanner(System.in);
+            int firstCardIndex = sc.nextInt();
+            int secondCardIndex = sc.nextInt();
+            int thirdCardIndex = sc.nextInt();
+
+            List<String> armyTypes = new ArrayList<>();
+            armyTypes.add("INFANTRY");
+            armyTypes.add("CALVARY");
+            armyTypes.add("ARTILLERY");
+
+
+            String firstCardValue = cardsInHand.get(firstCardIndex).getArmyPicture();
+            String secondCardValue = cardsInHand.get(secondCardIndex).getArmyPicture();
+            String thirdCardValue = cardsInHand.get(thirdCardIndex).getArmyPicture();
+
+            armyTypes.remove(firstCardValue);
+            armyTypes.remove(secondCardValue);
+            armyTypes.remove(thirdCardValue);
+
+            if(armyTypes.size() == 0){
+                armiesToPlace += 4;
+                removeCardsFromHand(firstCardValue, secondCardValue, thirdCardValue);
+
+            }
+            else if(armyTypes.size() == 1 && (firstCardValue == "WILD" || secondCardValue == "WILD" || thirdCardValue == "WILD" )){
+                armiesToPlace +=4;
+                removeCardsFromHand(firstCardValue, secondCardValue, thirdCardValue);
+            }
+            else if(firstCardValue == secondCardValue  && secondCardValue== thirdCardValue){
+                armiesToPlace += 4;
+                removeCardsFromHand(firstCardValue, secondCardValue, thirdCardValue);
+            }
+            else{
+                System.out.println("Sorry the cards you have chosen cannot be traded in");
+            }
+        }
+    }
+
+    public void transferCredits(Player giver, Player receiver, int amountOfCredits){
+        if(giver.getCredits() >= amountOfCredits){
+            giver.removeCredits(amountOfCredits);
+            receiver.addCredits(amountOfCredits);
+        }
+        else{
+            System.out.println("Insufficient credits");
+        }
+    }
+
+    public void buyCredits(Player buyer, int amountOfCredits){
+        System.out.println("you have just bought " + amountOfCredits);
+        buyer.addCredits(amountOfCredits);
+    }
+
+    public void removeCardsFromHand(String card1, String card2, String card3){
+        cardsInHand.remove(card1);
+        cardsInHand.remove(card2);
+        cardsInHand.remove(card3);
+    }
+
 
     public void takeCardFromDeck(Card cardTaken){
         cardsInHand.add(cardTaken);
@@ -32,6 +100,15 @@ public class Player {
         }
     }
 
+    public void addCredits(int creditsToAdd){
+        credits += creditsToAdd;
+    }
+    public void removeCredits(int creditsToRemove){
+        credits -= creditsToRemove;
+    }
+    public int getCredits(){
+        return credits;
+    }
     //Sets player name
     public void setPlayerName(String name){
         playerName = name;
