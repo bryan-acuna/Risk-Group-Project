@@ -1,12 +1,14 @@
 package com.teamB;
-
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
 /**
  * Hello world!
  *
  */
 public class App
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws Exception
     {
         //Creates the graph we can reference for adjacency
         String USA = "USA";
@@ -63,40 +65,25 @@ public class App
 
 
 
-        //System.out.println(myGameMap.isGameOver());
+        Twitter twitter = TwitterFactory.getSingleton();
+    // System.out.println("Type in tweet message: ");
+    // Scanner scan = new Scanner(System.in);
+    // String tweet = scan.nextLine();
+        int countrySize = myGameMap.getCountryCount();
+        String tweet = " ";
+        for(int i = 0; i < countrySize; i++) {
+            tweet = tweet + myGameMap.getIndividualMap(i) + " ";
+        }
+        Status status = twitter.updateStatus(tweet);
+        System.out.println("Successfully updated the status to [" + status.getText() + "].");
 
-
-
-
-        
-
-
-            /*
-            List<String> adjacencyOfUSA = myGame.getCountryAdjacency(USA);
-            if(adjacencyOfUSA.contains(CA)) {
-                System.out.println("Yes");
+        if(myGameMap.isGameOver()) {
+            String finalTweet = " ";
+            for(int i = 0; i < countrySize; i++) {
+                finalTweet = finalTweet + myGameMap.getIndividualMap(i) + " ";
             }
-            List<String> adjacencyOfUSA2 = myGame.getCountryAdjacency(USA);
-                if(adjacencyOfUSA2.contains(AFICA)){
-                    System.out.println("Yes");
-                }
-                else{
-                    System.out.println("No");
-                }
-            List<String> adjacencyOfJPN = myGame.getCountryAdjacency(JPN);
-            if(adjacencyOfJPN.isEmpty()){
-                System.out.println("empty");
-            }
-            for(String adjacency: adjacencyOfJPN){
-                if(CA == adjacency){
-                    System.out.println("Yes");
-                }
-                else{
-                    System.out.println("No");
-                }
-            }
-            */
-
-
+            Status finalStatus = twitter.updateStatus("End score:" + tweet);
+            System.out.println("Successfully updated the status to [" + finalStatus.getText() + "].");
+        }
     }
 }

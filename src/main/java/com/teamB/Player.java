@@ -24,6 +24,8 @@ public class Player {
         cardsInHand = new ArrayList<>();
         credits =0;
         numberOfUndos = 0;
+        attackerAndDefenderCountryID = new int[2];
+        countryStates = new ArrayList<>();
         //increasePlayerCount();
     }
 
@@ -181,9 +183,10 @@ public class Player {
 
 
 
+        Scanner sc1 = new Scanner(System.in);
         System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
         System.out.println("Which country would you like to attack?");
-        String countryAttacking = sc.nextLine().toUpperCase();
+        String countryAttacking = sc1.nextLine().toUpperCase();
 
 
 

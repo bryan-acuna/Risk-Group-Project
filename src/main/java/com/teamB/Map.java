@@ -40,7 +40,16 @@ public class Map {
     public List<String> getCountriesInOrder(){
         return countriesInOrder;
     }
-
+    public int getCountryCount() {
+        return countries.size();
+    }
+    public String getIndividualMap(int i){
+        int numberOfArmies = (countries.get(i)).getNumberArmies();
+        String controllingPlayer = (countries.get(i)).getControllingPlayer();
+        String theCountry = countriesInOrder.get(i);
+        String temp = theCountry + " is controlled by " + controllingPlayer + " and has: " + numberOfArmies + " army(s)";
+        return temp;
+    }
 
     //at some point will probably need Graph object as parameter for some checking
 
@@ -158,53 +167,4 @@ public class Map {
         }
         return gameOver;
     }
-
-
-//    public int getCountriesAvailable(){
-//        //return
-//    }
-    /*
-    public void autoPopulate(int numberPlayers, Graph graphObject){
-        int playerPieces;
-        //Need to write case 2 and change player pieces after
-        switch(numberPlayers){
-            case 3:
-                playerPieces = 4;
-                break;
-            case 4:
-                playerPieces = 3;
-                break;
-            case 5:
-                playerPieces = 2;
-                break;
-            case 6:
-                playerPieces = 2;
-                break;
-        }
-        Player array[] = new Player[numberPlayers];
-        for(int i =0; i < numberPlayers; i++){
-            String istring = Integer.toString(i);
-            Player newPlayer = new Player("Player"+ istring);
-            array[i] = newPlayer;
-        }
-        for(int i = 0; i < countriesAvailable; i++){
-            Random rand = new Random();
-            List<Integer> countriesClaimed = new ArrayList<>();
-            //Finds a random index (which is a country), the element in that index contains an army object
-            Boolean loopFalse = true;
-            while(loopFalse){
-                //int randomNum = rand.nextInt((max - min) + 1) + min;
-                int randomNum = rand.nextInt((5) + 1);
-                if(!countriesClaimed.contains(randomNum)) {
-                    //write an if statement to make suer the selected randomNum is not repeated
-                    (countries.get(randomNum)).setControllingPlayer((array[randomNum]).getPlayerName());
-                    (countries.get(randomNum)).setNumberArmies((countries.get(randomNum)).getNumberArmies() + 1);
-                    System.out.println((array[randomNum]).getPlayerName() + " is claiming: " + countriesInOrder.get(i));
-                    countriesClaimed.add(randomNum);
-                    loopFalse = false;
-                }
-            }
-        }
-    }
-    */
 }

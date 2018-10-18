@@ -38,7 +38,7 @@ public class Player_Controller {
         int numArmiesEach = 0;
         //just for testing easier
         if(numberPlayers == 2){
-            numArmiesEach = 3;
+            numArmiesEach = 1;
         }
         else if(numberPlayers == 3){
             numArmiesEach = 35;
@@ -149,7 +149,7 @@ public class Player_Controller {
             Player currentPlayer =  playerList.get(playerID);
             playerTurn++;
 
-            System.out.println("What would you like to do?" +
+            System.out.println("What would you like to do?" + currentPlayer.getPlayerName() +
                     "Enter 0 for attack, 1 for trade in cards," +
                     "2 for buying credits, 3 for transfer credits"+
                     ",4 to skip turn, 5 to spend credits");
@@ -157,7 +157,6 @@ public class Player_Controller {
             int answer  = sc.nextInt();
             if(answer == 0){
                 String whoWon = "";
-
                 currentPlayer.attack(gameMap, theGraph, theDice, currentPlayer, playerList, whoWon);
                 //give card if attack is success in currentPlayer favor
                 if(whoWon == "ATTACKER"){
@@ -375,22 +374,23 @@ public class Player_Controller {
         String USA = "USA";
         String JPN = "JPN";
         String EU = "EU";
-        String CA = "CA";
-        String SA = "SA";
-        String AFRICA = "AFRICA";
+//        String CA = "CA";
+//        String SA = "SA";
+//        String AFRICA = "AFRICA";
 
 
         Graph myGame = new Graph();
-        myGame.createInitialMap(6);
+        myGame.createInitialMap(3);
         myGame.bindCountriesToNumbers("USA");
         myGame.bindCountriesToNumbers("JPN");
         myGame.bindCountriesToNumbers("EU");
-        myGame.bindCountriesToNumbers("CA");
-        myGame.bindCountriesToNumbers("SA");
-        myGame.bindCountriesToNumbers("AFRICA");
-        myGame.addEdge(USA, CA);
-        myGame.addEdge(USA, SA);
-        myGame.addEdge(EU, AFRICA);
+//        myGame.bindCountriesToNumbers("CA");
+//        myGame.bindCountriesToNumbers("SA");
+//        myGame.bindCountriesToNumbers("AFRICA");
+//        myGame.addEdge(USA, CA);
+//        myGame.addEdge(USA, SA);
+//        myGame.addEdge(EU, AFRICA);
+        myGame.addEdge(USA, JPN);
 
 
 
