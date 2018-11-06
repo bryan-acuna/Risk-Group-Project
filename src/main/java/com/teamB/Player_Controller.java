@@ -1,5 +1,7 @@
 package com.teamB;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +17,7 @@ public class Player_Controller {
     private Graph theGraph;
 
 
-    Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
+        Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
         playerList = new LinkedList();
         this.gameMap = gameMap;
         this.theDeck = theDeck;
@@ -59,12 +61,40 @@ public class Player_Controller {
     }
 
 
+    public void undoAddArmyToCountry(String countryName, Player thePlayer) {
+        if(thePlayer.getCredits() < 1){
+            System.out.println("Not enough credits for undo");
+        }
+        else{
+            String capitalCountryName = countryName.toUpperCase();
+            gameMap.setCountriesAvailable(gameMap.getCountriesAvailable()+1);
+            //Idea is to use the player input of which country they selected
+            //find the army object inside the country
+            //Then see if it is just one 1 army, in which case the undo will remove
+            //ownership and revert the country back to no one owns it
+            //Or if there are more than 1 army, just remove one army from the country
+            HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
+            int countryID = countryIDFromString.get(capitalCountryName);
+            List<Army> countries = gameMap.getMap();
+            Army armiesInCountry = countries.get(countryID);
+            if (armiesInCountry.getNumberArmies() == 1) {
+                armiesInCountry.setControllingPlayer("None");
+                armiesInCountry.setNumberArmies(0);
+            } else {
+                armiesInCountry.subArmy();
+            }
+        }
+    }
+
+
     public void fillMap(){
         int numberArmiesEach = givePlayersStartingArmies();
-        int armiesToPlace = numberArmiesEach*playerList.size();
+        //int armiesToPlace = numberArmiesEach*playerList.size();
+        int armiesToPlace = 3;
         List<Army> countriesState = new ArrayList<>();
 
         //For intial claiming countries, just let them undo for free
+        System.out.println(armiesToPlace);
         for(int i =0; i < armiesToPlace; i++){
             int playerID = i% playerList.size();
             System.out.println("Choose a country to add an army to " + (playerList.get(playerID)).getPlayerName());
@@ -93,49 +123,59 @@ public class Player_Controller {
                     System.out.println("Please choose another country to claim");
                     Scanner sc = new Scanner(System.in);
                     countryToClaim = (sc.nextLine()).toUpperCase();
+
                 }
             }
             System.out.println("Do you want to undo your action? (y/n)");
 
-            String undoAnswer = "";
-            Scanner sc = new Scanner(System.in);
-            undoAnswer = (sc.nextLine()).toUpperCase();
-            //System.out.println("value of undoAnswer" +undoAnswer);
-            //System.out.println("Value of credits =" + playerList.get(playerID).getCredits() );
-            //if(playerList.get(playerID).getCredits() > 0 ) {
-                if (undoAnswer.equals("Y")) {
-                    i--;
-                    System.out.println("Free undo since start of game");
-                    gameMap.setCountriesAvailable(gameMap.getCountriesAvailable() + 1);
-
-                    //Idea is to use the player input of which country they selected
-                    //find the army object inside the country
-                    //Then see if it is just one 1 army, in which case the undo will remove
-                    //ownership and revert the country back to no one owns it
-                    //Or if there are more than 1 army, just remove one army from the country
-                    HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
-                    int countryID = countryIDFromString.get(countryToClaim);
-                    List<Army> countries = gameMap.getMap();
-
-
-                    Army armiesInCountry = countries.get(countryID);
-
-                    //System.out.println("here is the country they are trying to undo:" +countryToClaim);
-                    //armiesInCountry.print();
-
-                    if (armiesInCountry.getNumberArmies() == 1) {
-                        armiesInCountry.setControllingPlayer("None");
-                        armiesInCountry.setNumberArmies(0);
-                    } else {
-                        armiesInCountry.subArmy();
-                    }
-
-                }
+//            String undoAnswer = "";
+//            Scanner sc = new Scanner(System.in);
+//            undoAnswer = (sc.nextLine()).toUpperCase();
+//            //System.out.println("value of undoAnswer" +undoAnswer);
+//            //System.out.println("Value of credits =" + playerList.get(playerID).getCredits() );
+//            //if(playerList.get(playerID).getCredits() > 0 ) {
+//                if (undoAnswer.equals("Y")) {
+//                    i--;
+//                    System.out.println("Free undo since start of game");
+//                    gameMap.setCountriesAvailable(gameMap.getCountriesAvailable() + 1);
+//
+//                    //Idea is to use the player input of which country they selected
+//                    //find the army object inside the country
+//                    //Then see if it is just one 1 army, in which case the undo will remove
+//                    //ownership and revert the country back to no one owns it
+//                    //Or if there are more than 1 army, just remove one army from the country
+//                    HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
+//                    int countryID = countryIDFromString.get(countryToClaim);
+//                    List<Army> countries = gameMap.getMap();
+//
+//
+//                    Army armiesInCountry = countries.get(countryID);
+//
+//                    //System.out.println("here is the country they are trying to undo:" +countryToClaim);
+//                    //armiesInCountry.print();
+//
+//                    if (armiesInCountry.getNumberArmies() == 1) {
+//                        armiesInCountry.setControllingPlayer("None");
+//                        armiesInCountry.setNumberArmies(0);
+//                    } else {
+//                        armiesInCountry.subArmy();
+//                    }
+//
+//                }
             //}
             //else{
                 //System.out.println("Insufficient credits for undo, moving to next player");
             //}
         }// for loop end
+
+
+
+
+
+
+
+
+
 
         int playerTurn =0;
         int amountToBuy = 0;
@@ -157,8 +197,11 @@ public class Player_Controller {
             int answer  = sc.nextInt();
             if(answer == 0){
                 String whoWon = "";
-                currentPlayer.attack(gameMap, theGraph, theDice, currentPlayer, playerList, whoWon);
+                //currentPlayer.attack(gameMap, theGraph, theDice, currentPlayer, playerList, whoWon);
                 //give card if attack is success in currentPlayer favor
+                currentPlayer.attack(gameMap, theGraph, theDice,
+                                     currentPlayer, "USA", 1,
+                        playerList.get(1), "JPN", whoWon);
                 if(whoWon == "ATTACKER"){
                     theDeck.drawCardFromDeck(currentPlayer);
                 }
@@ -170,7 +213,7 @@ public class Player_Controller {
             else if(answer == 1){
                 System.out.println("Here are the number of cards before traded in: ");
                 currentPlayer.printCardsInHard();
-                currentPlayer.tradeInCards();
+                //currentPlayer.tradeInCards();
                 System.out.println("Here are the number of cards after traded in: ");
                 currentPlayer.printCardsInHard();
             }
@@ -340,6 +383,8 @@ public class Player_Controller {
 
 
 
+
+
     public static void main(String []args){
         //uncomment when done testing
 //        String key ="";
@@ -353,7 +398,6 @@ public class Player_Controller {
 //            // load a properties file
 //            prop.load(input);
 //
-//            // get the property value and print it out
 //            key = prop.getProperty("key");
 //            secKey = prop.getProperty("secKey");
 //        } catch (IOException ex) {
@@ -367,10 +411,13 @@ public class Player_Controller {
 //                }
 //            }
 //        }
+////
+////        System.out.println(key);
+////        System.out.println(secKey);
 //        UploadObject myUpload = new UploadObject();
 //        String filePath = "fileToS3";
 //        myUpload.upload(key, secKey,"mikebitest05012018", "gameStatus",  filePath);
-//
+
         String USA = "USA";
         String JPN = "JPN";
         String EU = "EU";
@@ -391,6 +438,7 @@ public class Player_Controller {
 //        myGame.addEdge(USA, SA);
 //        myGame.addEdge(EU, AFRICA);
         myGame.addEdge(USA, JPN);
+        myGame.addEdge(USA, EU);
 
 
 

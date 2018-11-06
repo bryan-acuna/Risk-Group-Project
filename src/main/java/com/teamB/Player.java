@@ -33,7 +33,12 @@ public class Player {
         return attackerAndDefenderCountryID;
     }
     public void buyUndo(){
-        numberOfUndos += 1;
+        if(this.getCredits() >=1) {
+            numberOfUndos += 1;
+        }
+        else{
+            System.out.println("Not enough credits");
+        }
     }
 
     public void useUndo(){
@@ -44,15 +49,12 @@ public class Player {
         return numberOfUndos;
     }
 
-    public void tradeInCards(){
+    public void tradeInCards(Card firstTradeIn, Card secondTradeIn, Card thirdTradeIn){
         if(cardsInHand.size() > 3) {
             System.out.println("Here are the cards you have: ");
             printCardsInHard();
             System.out.println("which would you like to trade in? Enter the index values of the cards");
-            Scanner sc = new Scanner(System.in);
-            int firstCardIndex = sc.nextInt();
-            int secondCardIndex = sc.nextInt();
-            int thirdCardIndex = sc.nextInt();
+
 
             List<String> armyTypes = new ArrayList<>();
             armyTypes.add("INFANTRY");
@@ -60,9 +62,9 @@ public class Player {
             armyTypes.add("ARTILLERY");
 
 
-            String firstCardValue = cardsInHand.get(firstCardIndex).getArmyPicture();
-            String secondCardValue = cardsInHand.get(secondCardIndex).getArmyPicture();
-            String thirdCardValue = cardsInHand.get(thirdCardIndex).getArmyPicture();
+            String firstCardValue = firstTradeIn.getArmyPicture();
+            String secondCardValue = secondTradeIn.getArmyPicture();
+            String thirdCardValue = thirdTradeIn.getArmyPicture();
 
             armyTypes.remove(firstCardValue);
             armyTypes.remove(secondCardValue);
@@ -169,63 +171,65 @@ public class Player {
 
     //The problem with this is that we need to a roll dice per army, and b if win, gain control of country
 
-    public boolean attack(Map gameMap, Graph myGame, Dice theDie, Player attacker, List<Player> playerList, String whoWon){
+    public boolean attack(Map gameMap, Graph myGame, Dice theDie,
+                          Player attacker, String attackingCountry, int numberOfArmiesToAttackWith,
+                          Player defender, String defendeingCountry,
+                          String whoWon){
         countryStates.clear();
 
 
+//        System.out.println("Select a country you own: ");
+//        Scanner sc = new Scanner(System.in);
+//        String myCountry = sc.nextLine().toUpperCase();
+        String capsAttackingCountry = attackingCountry.toUpperCase();
 
-        System.out.println("Select a country you own: ");
-        Scanner sc = new Scanner(System.in);
-        String myCountry = sc.nextLine().toUpperCase();
-
-
-        attackerAndDefenderCountryID[0] = gameMap.getHashMap().get(myCountry);
-
+        attackerAndDefenderCountryID[0] = gameMap.getHashMap().get(attackingCountry);
 
 
-        Scanner sc1 = new Scanner(System.in);
-        System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(myCountry));
-        System.out.println("Which country would you like to attack?");
-        String countryAttacking = sc1.nextLine().toUpperCase();
+
+        //Scanner sc1 = new Scanner(System.in);
+        //System.out.println("Adjacent Countries: " + myGame.getCountryAdjacency(attackingCountry));
+        //System.out.println("Which country would you like to attack?");
+        String capsdefendingCountry = defendeingCountry.toUpperCase();
 
 
 
         //Find the countryID from the country they want to attack
         //get the player name (string) who owns it and he will be defender
         //must find who it is though the playerList
-        Player defender = new Player();
-        int countryID = gameMap.getHashMap().get(countryAttacking);
+
+        int countryID = gameMap.getHashMap().get(capsdefendingCountry);
         attackerAndDefenderCountryID[1] = countryID;
         String defenderName = gameMap.getMap().get(countryID).getControllingPlayer();
         PopUpNotify.infoBox(defenderName+" are under attack!", "Notify Player");
         //We have the defenders name, now we just need to find the player object
         //in the arrayList
-        for(int i =0; i < playerList.size(); i++){
-            if(defenderName == playerList.get(i).getPlayerName()){
-                defender = playerList.get(i);
-            }
-        }
+//        for(int i =0; i < playerList.size(); i++){
+//            if(defenderName == playerList.get(i).getPlayerName()){
+//                defender = playerList.get(i);
+//            }
+//        }
 
 
-        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(myCountry)));
-        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(countryAttacking)));
-
-        if(!myGame.getCountryAdjacency(myCountry).contains(countryAttacking)){
+        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(capsAttackingCountry)));
+        countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(capsdefendingCountry)));
+        System.out.println("attack done");
+        if(!myGame.getCountryAdjacency(capsAttackingCountry).contains(capsdefendingCountry)){
             return false;
         }
 
         //armies the attacker uses
-        System.out.println("How many armies would you like to attack with?");
-        while (!sc.hasNextInt())
-            sc.next();
-        int armiesAttacking = sc.nextInt();
+        //System.out.println("How many armies would you like to attack with?");
+        //while (!sc.hasNextInt())
+            //sc.next();
+        int armiesAttacking = numberOfArmiesToAttackWith;
 
         //armies the defender uses
-        System.out.println("How many armies would the opponent like to defend with?");
-        while (!sc.hasNextInt())
-            sc.next();
-        int armiesDefending = sc.nextInt();
-        PopUpNotify.infoBox("you are being attacked: " + defenderName, "Notfiy Player");
+        //System.out.println("How many armies would the opponent like to defend with?");
+        //while (!sc.hasNextInt())
+        //    sc.next();
+        int armiesDefending = gameMap.getMap().get(countryID).getNumberArmies();
+        //PopUpNotify.infoBox("you are being attacked: " + defenderName, "Notfiy Player");
 
         //Highest dice roll for attacker
         int attTopNum = 0;
@@ -235,6 +239,7 @@ public class Player {
                 attTopNum = temp;
             }
         }
+
 
         //Highest dice roll for defender
         int defTopNum = 0;
@@ -252,9 +257,9 @@ public class Player {
 
 
             //take control of country
-            gameMap.removeOneArmy(myCountry);
-            gameMap.addArmy(countryAttacking, attacker);
-            gameMap.TakeOver(countryAttacking, attacker.getPlayerName());
+            gameMap.removeOneArmy(capsAttackingCountry);
+            gameMap.addArmy(capsdefendingCountry, attacker);
+            gameMap.TakeOver(capsdefendingCountry, attacker.getPlayerName());
 
         }
         else if(attTopNum <= defTopNum) {
@@ -262,11 +267,14 @@ public class Player {
             whoWon = "DEFENDER";
 
             //subtract one army from yourself
-            gameMap.subArmy(countryAttacking, attacker, defender);
-            gameMap.TakeOver(myCountry, defender.getPlayerName());
+            gameMap.subArmy(capsdefendingCountry, attacker, defender);
+            gameMap.TakeOver(capsAttackingCountry, defender.getPlayerName());
         }
 
-        sc.close();
+
+
+
+        //sc.close();
         return true;
 
     }
