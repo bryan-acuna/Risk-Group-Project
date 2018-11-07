@@ -62,7 +62,7 @@ public class Player_Controller {
 
 
     public void undoAddArmyToCountry(String countryName, Player thePlayer) {
-        if(thePlayer.getCredits() < 1){
+        if(thePlayer.getNumberOfUndos() < 1){
             System.out.println("Not enough credits for undo");
         }
         else{
@@ -83,7 +83,68 @@ public class Player_Controller {
             } else {
                 armiesInCountry.subArmy();
             }
+            thePlayer.useUndo();
         }
+    }
+
+    public void undoAttack(Player currentPlayer){
+        if(currentPlayer.getNumberOfUndos() < 1){
+            System.out.println("Not enough credits for undo");
+        }
+        else {
+            List<Army> countryStates = currentPlayer.getCountryStates();
+            int[] getAttackerAndDefender = currentPlayer.getAttackerAndDefender();
+
+            System.out.println("undoing the attack");
+            System.out.println("value of the countries after the attack: ");
+            gameMap.getMapStatus();
+
+            gameMap.getMap().get(getAttackerAndDefender[0]).setControllingPlayer(countryStates.get(0).getControllingPlayer());
+            gameMap.getMap().get(getAttackerAndDefender[0]).setNumberArmies(countryStates.get(0).getNumberArmies());
+            gameMap.getMap().get(getAttackerAndDefender[1]).setControllingPlayer(countryStates.get(1).getControllingPlayer());
+            gameMap.getMap().get(getAttackerAndDefender[1]).setNumberArmies(countryStates.get(1).getNumberArmies());
+            System.out.println("value of the countries after the undo: ");
+            gameMap.getMapStatus();
+            currentPlayer.useUndo();
+        }
+    }
+
+    public void undoBuyCredits(Player currentPlayer, int creditsToRefund) {
+        if (currentPlayer.getNumberOfUndos() < 1) {
+            System.out.println("Not enough credits for undo");
+        } else {
+            System.out.println("value of credits after buy: " + currentPlayer.getCredits());
+            currentPlayer.removeCredits(creditsToRefund);
+            currentPlayer.useUndo();
+            System.out.println("value of credits after undo: " + currentPlayer.getCredits());
+
+        }
+    }
+
+    public void undoTransferCredits(Player currentPlayer, Player playerInitiallyTransferedCredits, int transferedCredits){
+        if(currentPlayer.getNumberOfUndos() < 1){
+            System.out.println("Not enough credits for undo");
+        }
+        else {currentPlayer.transferCredits(playerInitiallyTransferedCredits, currentPlayer, transferedCredits);
+        currentPlayer.useUndo();}
+    }
+
+    public void undoBuyUndo(Player currentPlayer){
+        if(currentPlayer.getNumberOfUndos() < 1){
+            System.out.println("Not enough credits for undo");
+        }
+        else {currentPlayer.addCredits(1);
+        currentPlayer.useUndo();
+        currentPlayer.useUndo();}
+    }
+
+    public void undoBuyCard(Player currentPlayer){
+        if(currentPlayer.getNumberOfUndos() < 1){
+            System.out.println("Not enough credits for undo");
+        }
+        else {currentPlayer.addCredits(1);
+        theDeck.undoDrawCardFromDeck(currentPlayer);
+        currentPlayer.useUndo();}
     }
 
 
@@ -278,6 +339,7 @@ public class Player_Controller {
                     currentPlayer.printCardsInHard();
                 }
             }
+
             System.out.println("Do you wish to undo action?(y/n");
             Scanner scAnswer = new Scanner(System.in);
             String undoAnswer  = scAnswer.nextLine().toUpperCase();
@@ -314,7 +376,11 @@ public class Player_Controller {
                         currentPlayer.removeCredits(amountToBuy);
                         currentPlayer.useUndo();
                         System.out.println("value of credits after undo: "+ currentPlayer.getCredits());
-                    } else if (answer == 3) {
+                    }
+
+
+
+                    else if (answer == 3) {
                         Player receiver = new Player();
                         for (int i = 0; i < playerList.size(); i++) {
                             if (receiverName == playerList.get(i).getPlayerName()) {
