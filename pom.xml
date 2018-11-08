@@ -47,6 +47,21 @@
       <artifactId>twitter4j-core</artifactId>
       <version>4.0.7</version>
     </dependency>
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots-chat-session-bot</artifactId>
+      <version>4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots</artifactId>
+      <version>4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.pengrad</groupId>
+      <artifactId>java-telegram-bot-api</artifactId>
+      <version>4.1.0</version>
+    </dependency>
   </dependencies>
 
   <build>

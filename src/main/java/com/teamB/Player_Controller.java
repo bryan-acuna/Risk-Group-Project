@@ -2,19 +2,36 @@ package com.teamB;
 
 
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
 import java.util.*;
+
 
 public class Player_Controller {
     private List<Player> playerList;
     private Map gameMap;
     private Deck theDeck;
     private Graph theGraph;
+    static private int gameCounter =0;
+    private int gameID;
+
+
+    //Variables used for file reader
+    private File file; //this is hard coded "fileToS3", but can change later on
+    private long lastModified;
+    private int currentLineInFile;
+
+
+    private chatBot bot;
 
 
         Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
@@ -22,13 +39,59 @@ public class Player_Controller {
         this.gameMap = gameMap;
         this.theDeck = theDeck;
         this.theGraph = theGraph;
-        for(int i =0; i < playerNum; i++){
-            System.out.println("Who is player " + i);
-            Scanner sc = new Scanner(System.in);
-            String playerName = sc.nextLine();
-            createPlayer(playerName, i);
+
+        //Setup for bot
+        ApiContextInitializer.init();
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+        bot = new chatBot();
+
+        try{
+
+            telegramBotsApi.registerBot(bot);
+        }
+        catch(TelegramApiRequestException e){
+            e.printStackTrace();
         }
 
+        //dont really need this yet, later on
+        this.gameID = gameCounter;
+        gameCounter++;
+
+
+        //setupFile and initialize lastMod
+        file = new File("fileToS3");
+        //clearFile
+        clearFile(file);
+
+
+        lastModified= file.lastModified();
+        currentLineInFile = 1;
+
+        for(int i =0; i < playerNum; i++){
+            //System.out.println("Who is player " + i);
+            bot.sendMessage("Who is player "+ i);
+            //Scanner sc = new Scanner(System.in);
+            String playerName = fileCheck(file, lastModified, currentLineInFile);
+            currentLineInFile++;
+            lastModified = file.lastModified();
+            createPlayer(playerName, i);
+        }
+    }
+
+    public String fileCheck(File file, long lastModified, int lineToRead) {
+        file = new File("fileToS3");
+
+        //long lastMod = file.lastModified();
+        long lastMod = lastModified;
+        while (lastMod == file.lastModified()) {
+        }
+        try {
+            String lineData = Files.readAllLines(Paths.get("fileToS3"), Charset.defaultCharset()).get(lineToRead);
+            return lineData;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     /*
      * Gives each player a number of armies based on number of players
@@ -40,7 +103,7 @@ public class Player_Controller {
         int numArmiesEach = 0;
         //just for testing easier
         if(numberPlayers == 2){
-            numArmiesEach = 1;
+            numArmiesEach = 2;
         }
         else if(numberPlayers == 3){
             numArmiesEach = 35;
@@ -147,31 +210,57 @@ public class Player_Controller {
         currentPlayer.useUndo();}
     }
 
+    public void printAvailableCountries(){
+        System.out.println("Here are the countries that have not been claimed");
+        for(int i =0; i < gameMap.getCountryCount(); i++){
+            if(gameMap.getMap().get(i).getControllingPlayer() == "None"){
+                System.out.println(gameMap.getCountriesInOrder().get(i));
+            }
+        }
+    }
+    public void clearFile(File file){
+        try {
+            String str = "NewGame:";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(str);
+            writer.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
 
     public void fillMap(){
         int numberArmiesEach = givePlayersStartingArmies();
-        //int armiesToPlace = numberArmiesEach*playerList.size();
-        int armiesToPlace = 3;
+        int armiesToPlace = numberArmiesEach*playerList.size();
         List<Army> countriesState = new ArrayList<>();
 
         //For intial claiming countries, just let them undo for free
         System.out.println(armiesToPlace);
         for(int i =0; i < armiesToPlace; i++){
             int playerID = i% playerList.size();
-            System.out.println("Choose a country to add an army to " + (playerList.get(playerID)).getPlayerName());
+            bot.sendMessage(playerList.get(playerID).getPlayerName() +" choose a country to add an army");
+            //System.out.println("Choose a country to add an army to " + (playerList.get(playerID)).getPlayerName());
 
             boolean correctCountryName = true;
             String countryToClaim = "";
             while(correctCountryName) {
-                Scanner sc = new Scanner(System.in);
-                countryToClaim = (sc.nextLine()).toUpperCase();
+                //Scanner sc = new Scanner(System.in);
+                //countryToClaim = (sc.nextLine()).toUpperCase();
+
+                countryToClaim = fileCheck(file, lastModified, currentLineInFile);
+                currentLineInFile++;
+                lastModified = file.lastModified();
+
+
                 if( (gameMap.getCountriesInOrder()).contains(countryToClaim) ){
                     correctCountryName = false;
                 }
                 else{
                     System.out.println("Country does not exist");
                 }
-
             }
             Player currentPlayer = playerList.get(playerID);
             boolean countryAdded = false;
@@ -180,14 +269,17 @@ public class Player_Controller {
                     countryAdded = true;
                 }
                 else{
-                    gameMap.addArmy(countryToClaim, currentPlayer);
+                    //gameMap.addArmy(countryToClaim, currentPlayer);
                     System.out.println("Please choose another country to claim");
-                    Scanner sc = new Scanner(System.in);
-                    countryToClaim = (sc.nextLine()).toUpperCase();
+                    //Scanner sc = new Scanner(System.in);
+                    //countryToClaim = (sc.nextLine()).toUpperCase();
+                    countryToClaim = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
 
                 }
             }
-            System.out.println("Do you want to undo your action? (y/n)");
+            //System.out.println("Do you want to undo your action? (y/n)");
 
 //            String undoAnswer = "";
 //            Scanner sc = new Scanner(System.in);
@@ -446,6 +538,19 @@ public class Player_Controller {
         return playerList;
     }
 
+    public long getLastModified(){
+        return lastModified;
+    }
+    public void setLastModified(long newModify){
+        this.lastModified = newModify;
+    }
+
+    public int getCurrentLineInFile(){
+        return currentLineInFile;
+    }
+    public void increaseCurrentLineInFile(){
+        this.currentLineInFile++;
+    }
 
 
 
@@ -506,40 +611,43 @@ public class Player_Controller {
         myGame.addEdge(USA, JPN);
         myGame.addEdge(USA, EU);
 
-
-
         myGame.printMapAdjacencies();
         Deck theDeck = new Deck();
 //
 //
         Map myGameMap = new Map(myGame);
+
         Dice theDie = new Dice();
 //
 //        Player bryan = new Player("Bryan", 0);
 //        Player jake = new Player("Jake", 1);
 //        myGameMap.addArmy(USA, bryan);
 //        myGameMap.addArmy(EU, bryan);
-//        myGameMap.addArmy(JPN, jake);
-//        myGameMap.addArmy(USA, bryan);
+//        myGameMap.addArmy(EU, bryan);
 //        myGameMap.getMapStatus();
-//        bryan.attack(myGameMap, myGame, theDie, bryan, jake);
-//        System.out.println();
-//        myGameMap.getMapStatus();
-//
-//
-//
-//
+        //myGameMap.addArmy(USA, bryan);
+        //myGameMap.getMapStatus();
+        //bryan.attack(myGameMap, myGame, theDie, bryan, jake);
+        //System.out.println();
+        //myGameMap.getMapStatus();
+
+
+
+
         Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck, myGame);
         //Show who the layers are
         for(int i =0; i < gameController.playerList.size(); i++){
-            List<Player> test = gameController.getPlayerList();
-            System.out.println("Player " + i+ " is " + (test.get(i)).getPlayerName());
+            List<Player> playerList = gameController.getPlayerList();
+            System.out.println("Player " + i+ " is " + (playerList.get(i)).getPlayerName());
         }
+
+
 
         //allows players to claim countries and add initial armies to them
         gameController.fillMap();
 
         //prints status of map so far
+        System.out.println("hello");
         myGameMap.getMapStatus();
 //        Player_Controller gameController = new Player_Controller(2, myGameMap);
 //
