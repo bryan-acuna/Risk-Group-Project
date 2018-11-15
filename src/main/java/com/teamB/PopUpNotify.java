@@ -34,35 +34,21 @@ public class PopUpNotify
 
 
     public static void main(String []args) {
-//        boolean didFileChange = false;
-//
-//
-//        TimerTask task = new FileWatcher(new File("fileToS3"), didFileChange);
-//
-//        Timer timer = new Timer();
-//        timer.schedule(task, new Date(), 1000);
-//
-//        if((((FileWatcher) task).getTruth() == true)){
-//            System.out.println("works");
-//        }
 
-        File file1 = new File("fileToS3");
-        long lastMod = file1.lastModified();
 
-        PopUpNotify my = new PopUpNotify();
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask(){
+            int secondsPassed = 0;
+            public void run(){
+                if(secondsPassed == 5){
+                    System.out.println("out of time");
+                }
+                secondsPassed++;
 
-        try {
-            File file = new File("fileToS3");
-            FileWriter fr = new FileWriter(file, true);
-            fr.write("\ndata");
-            fr.close();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+            }
+        };
 
-        boolean myTruth = my.fileCheck(new File("fileToS3"),lastMod);
-        System.out.println(myTruth);
+
 
 
     }

@@ -49,6 +49,7 @@ public class chatBot extends TelegramLongPollingBot {
                     .setChatId(chat_id)
                     .setText(message_text);
             System.out.println(message_text);
+            //System.out.println(chat_id);
             writeToReceivedMessageToFile(message_text);
         }
     }

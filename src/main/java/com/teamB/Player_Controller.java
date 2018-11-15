@@ -22,7 +22,7 @@ public class Player_Controller {
     private Deck theDeck;
     private Graph theGraph;
     static private int gameCounter =0;
-    private int gameID;
+    private String gameID;
 
 
     //Variables used for file reader
@@ -31,14 +31,17 @@ public class Player_Controller {
     private int currentLineInFile;
 
 
+
     private chatBot bot;
 
 
         Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
+
         playerList = new LinkedList();
         this.gameMap = gameMap;
         this.theDeck = theDeck;
         this.theGraph = theGraph;
+        this.gameID = "12345";
 
         //Setup for bot
         ApiContextInitializer.init();
@@ -54,8 +57,8 @@ public class Player_Controller {
         }
 
         //dont really need this yet, later on
-        this.gameID = gameCounter;
-        gameCounter++;
+        //this.gameID = gameCounter;
+        //gameCounter++;
 
 
         //setupFile and initialize lastMod
@@ -66,7 +69,7 @@ public class Player_Controller {
 
         lastModified= file.lastModified();
         currentLineInFile = 1;
-
+        waitForPlayers();
         for(int i =0; i < playerNum; i++){
             //System.out.println("Who is player " + i);
             bot.sendMessage("Who is player "+ i);
@@ -83,15 +86,23 @@ public class Player_Controller {
 
         //long lastMod = file.lastModified();
         long lastMod = lastModified;
-        while (lastMod == file.lastModified()) {
+        long t = System.currentTimeMillis();
+        long end = t + 30000;
+        while(System.currentTimeMillis() < end && lastMod == file.lastModified()) {
+
         }
-        try {
-            String lineData = Files.readAllLines(Paths.get("fileToS3"), Charset.defaultCharset()).get(lineToRead);
-            return lineData;
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(lastMod == file.lastModified()){
+            System.out.println("no answer");
         }
-        return null;
+        else {
+            try {
+                String lineData = Files.readAllLines(Paths.get("fileToS3"), Charset.defaultCharset()).get(lineToRead);
+                return lineData;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "-1";
     }
     /*
      * Gives each player a number of armies based on number of players
@@ -228,11 +239,27 @@ public class Player_Controller {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
 
+    public void waitForPlayers(){
+        int playersJoined =0;
+        String enteredGameID;
+        while(playersJoined < 3){
+            bot.sendMessage("Enter a gameID please");
+            enteredGameID = fileCheck(file, lastModified, currentLineInFile);
+            currentLineInFile++;
+            lastModified = file.lastModified();
+            System.out.println("entered gameID" +enteredGameID);
+            if(enteredGameID.compareTo(this.gameID) == 1){
+                playersJoined++;
+            }
+            System.out.println("value of players joined" + playersJoined);
+        }
     }
 
 
     public void fillMap(){
+
         int numberArmiesEach = givePlayersStartingArmies();
         int armiesToPlace = numberArmiesEach*playerList.size();
         List<Army> countriesState = new ArrayList<>();
@@ -635,6 +662,7 @@ public class Player_Controller {
 
 
         Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck, myGame);
+
         //Show who the layers are
         for(int i =0; i < gameController.playerList.size(); i++){
             List<Player> playerList = gameController.getPlayerList();
