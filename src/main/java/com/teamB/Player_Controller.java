@@ -5,12 +5,19 @@ package com.teamB;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import java.util.*;
@@ -35,13 +42,13 @@ public class Player_Controller {
     private chatBot bot;
 
 
-        Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
+    Player_Controller(int playerNum, Map gameMap, Deck theDeck, Graph theGraph){
 
         playerList = new LinkedList();
         this.gameMap = gameMap;
         this.theDeck = theDeck;
         this.theGraph = theGraph;
-        this.gameID = "12345";
+        this.gameID = "123";
 
         //Setup for bot
         ApiContextInitializer.init();
@@ -88,21 +95,38 @@ public class Player_Controller {
         long lastMod = lastModified;
         long t = System.currentTimeMillis();
         long end = t + 30000;
+        boolean timeExceeded = false;
         while(System.currentTimeMillis() < end && lastMod == file.lastModified()) {
 
         }
+
+        if(t >= end){
+            timeExceeded = true;
+        }
         if(lastMod == file.lastModified()){
             System.out.println("no answer");
+            try {
+                File fileToWrite = new File("fileToS3");
+                FileWriter fr = new FileWriter(fileToWrite, true);
+                fr.write("\n"+ "4");
+                fr.close();
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
         }
         else {
+
             try {
-                String lineData = Files.readAllLines(Paths.get("fileToS3"), Charset.defaultCharset()).get(lineToRead);
-                return lineData;
+                if(timeExceeded == false) {
+                    String lineData = Files.readAllLines(Paths.get("fileToS3"), Charset.defaultCharset()).get(lineToRead);
+                    return lineData;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return "-1";
+        return "4";
     }
     /*
      * Gives each player a number of armies based on number of players
@@ -117,7 +141,7 @@ public class Player_Controller {
             numArmiesEach = 2;
         }
         else if(numberPlayers == 3){
-            numArmiesEach = 35;
+            numArmiesEach = 2;
         }
         else if(numberPlayers == 4){
             numArmiesEach = 30;
@@ -250,12 +274,41 @@ public class Player_Controller {
             currentLineInFile++;
             lastModified = file.lastModified();
             System.out.println("entered gameID" +enteredGameID);
-            if(enteredGameID.compareTo(this.gameID) == 1){
+            if(enteredGameID.compareTo(this.gameID) == 0){
                 playersJoined++;
             }
             System.out.println("value of players joined" + playersJoined);
         }
     }
+
+    public boolean checkIfValidPlayer(Player currentPlayer){
+        boolean boolValidPlayer = false;
+        int i = 0;
+        while(boolValidPlayer == false && i < gameMap.getMap().size()){
+            if(gameMap.getMap().get(i).getControllingPlayer() == currentPlayer.getPlayerName()){
+                boolValidPlayer = true;
+            }
+            i++;
+        }
+        return boolValidPlayer;
+    }
+
+    public void tweetGame(){
+        Twitter twitter = TwitterFactory.getSingleton();
+        int countrySize = gameMap.getCountryCount();
+        String tweet = " ";
+        for(int i = 0; i < countrySize; i++) {
+            tweet = tweet + gameMap.getIndividualMap(i) + " ";
+        }
+        try {
+            Status status = twitter.updateStatus(tweet);
+            System.out.println("Successfully updated the status to [" + status.getText() + "].");
+        }
+        catch(TwitterException e){
+            //System.out.println("No change on map");
+        }
+    }
+
 
 
     public void fillMap(){
@@ -306,46 +359,7 @@ public class Player_Controller {
 
                 }
             }
-            //System.out.println("Do you want to undo your action? (y/n)");
 
-//            String undoAnswer = "";
-//            Scanner sc = new Scanner(System.in);
-//            undoAnswer = (sc.nextLine()).toUpperCase();
-//            //System.out.println("value of undoAnswer" +undoAnswer);
-//            //System.out.println("Value of credits =" + playerList.get(playerID).getCredits() );
-//            //if(playerList.get(playerID).getCredits() > 0 ) {
-//                if (undoAnswer.equals("Y")) {
-//                    i--;
-//                    System.out.println("Free undo since start of game");
-//                    gameMap.setCountriesAvailable(gameMap.getCountriesAvailable() + 1);
-//
-//                    //Idea is to use the player input of which country they selected
-//                    //find the army object inside the country
-//                    //Then see if it is just one 1 army, in which case the undo will remove
-//                    //ownership and revert the country back to no one owns it
-//                    //Or if there are more than 1 army, just remove one army from the country
-//                    HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
-//                    int countryID = countryIDFromString.get(countryToClaim);
-//                    List<Army> countries = gameMap.getMap();
-//
-//
-//                    Army armiesInCountry = countries.get(countryID);
-//
-//                    //System.out.println("here is the country they are trying to undo:" +countryToClaim);
-//                    //armiesInCountry.print();
-//
-//                    if (armiesInCountry.getNumberArmies() == 1) {
-//                        armiesInCountry.setControllingPlayer("None");
-//                        armiesInCountry.setNumberArmies(0);
-//                    } else {
-//                        armiesInCountry.subArmy();
-//                    }
-//
-//                }
-            //}
-            //else{
-                //System.out.println("Insufficient credits for undo, moving to next player");
-            //}
         }// for loop end
 
 
@@ -364,195 +378,256 @@ public class Player_Controller {
         int creditsToTransfer = 0;
 
         Dice theDice = new Dice();
-        while(!gameMap.isGameOver()){
-            int playerID = playerTurn% playerList.size();
-            Player currentPlayer =  playerList.get(playerID);
+        while(gameMap.isGameOverCheck() == false) {
+
+            int playerID = playerTurn % playerList.size();
+            Player currentPlayer = playerList.get(playerID);
             playerTurn++;
-
-            System.out.println("What would you like to do?" + currentPlayer.getPlayerName() +
-                    "Enter 0 for attack, 1 for trade in cards," +
-                    "2 for buying credits, 3 for transfer credits"+
-                    ",4 to skip turn, 5 to spend credits");
-            Scanner sc = new Scanner(System.in);
-            int answer  = sc.nextInt();
-            if(answer == 0){
-                String whoWon = "";
-                //currentPlayer.attack(gameMap, theGraph, theDice, currentPlayer, playerList, whoWon);
-                //give card if attack is success in currentPlayer favor
-                currentPlayer.attack(gameMap, theGraph, theDice,
-                                     currentPlayer, "USA", 1,
-                        playerList.get(1), "JPN", whoWon);
-                if(whoWon == "ATTACKER"){
-                    theDeck.drawCardFromDeck(currentPlayer);
-                }
-                System.out.println("here is the status of the map");
-                gameMap.getMapStatus();
+            if (checkIfValidPlayer(currentPlayer) == false) {
             }
+            else {
+                bot.sendMessage("What would you like to do?" + currentPlayer.getPlayerName() +
+                        "Enter 0 for attack, 1 for trade in cards," +
+                        "2 for buying credits, 3 for transfer credits" +
+                        ",4 to skip turn, 5 to spend credits");
+
+                int answer = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                currentLineInFile++;
+                lastModified = file.lastModified();
+                if (answer == 0) {
+                    String whoWon = "";
+                    //currentPlayer.attack(gameMap, theGraph, theDice, currentPlayer, playerList, whoWon);
+                    //give card if attack is success in currentPlayer favor
+
+                    bot.sendMessage("Which country would you like to attack with?");
+                    String countryToAttackWith = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+
+                    bot.sendMessage("How many armies?");
+                    String numberOfArmies = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+
+                    bot.sendMessage("Which country would you like to attack?");
+                    String countryToAttack = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+
+                    bot.sendMessage("Which player is it?");
+                    String playerInList = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+
+                    System.out.println(playerList.get(Integer.parseInt(playerInList)).getPlayerName());
+
+                    currentPlayer.attack(gameMap, theGraph, theDice,
+                            currentPlayer, countryToAttackWith, Integer.parseInt(numberOfArmies),
+                            playerList.get(Integer.parseInt(playerInList)), countryToAttack, whoWon);
 
 
-            else if(answer == 1){
-                System.out.println("Here are the number of cards before traded in: ");
-                currentPlayer.printCardsInHard();
-                //currentPlayer.tradeInCards();
-                System.out.println("Here are the number of cards after traded in: ");
-                currentPlayer.printCardsInHard();
-            }
-
-
-            else if(answer == 2){
-                System.out.println("how many credits would you like to buy?");
-                Scanner sc1 = new Scanner(System.in);
-                amountToBuy = sc1.nextInt();
-                System.out.println("Here are number of credits before buy" + currentPlayer.getCredits());
-
-                currentPlayer.buyCredits(currentPlayer, amountToBuy);
-                System.out.println("Here are number of credits after buy" + currentPlayer.getCredits());
-            }
-            else if(answer == 3){
-
-                System.out.println("Enter player name to transfer to");
-                Scanner sc1 = new Scanner(System.in);
-                receiverName = sc1.nextLine();
-                System.out.println("How many credits to transfer?");
-                Scanner sc2 = new Scanner(System.in);
-                creditsToTransfer= sc2.nextInt();
-
-                Player receiver = new Player();
-                for(int i =0; i < playerList.size(); i++){
-                    if(receiverName == playerList.get(i).getPlayerName()){
-                        receiver = playerList.get(i);
+                    if (whoWon == "ATTACKER") {
+                        theDeck.drawCardFromDeck(currentPlayer);
                     }
-                }
-                System.out.println("Here are number of credits of player transfering before: " + currentPlayer.getCredits());
-                System.out.println("Here are number of credits of receiver before: " + receiver.getCredits());
-                currentPlayer.transferCredits(currentPlayer, receiver, creditsToTransfer);
-                System.out.println("Here are number of credits of player transfering after: " + currentPlayer.getCredits());
-                System.out.println("Here are number of credits of receiver after: " + receiver.getCredits());
-
-            }
-            else if(answer == 4){
-                //Does nothing because they are skipping turn
-            }
-            else if(answer == 5){
-                System.out.println("What would you like to buy?" +
-                        "Enter 0 for buy undo (cost 1),Enter 1 for buy card (cost 2) ");
-                Scanner sc1 = new Scanner(System.in);
-                selection = sc1.nextInt();
-                if(selection == 0 && currentPlayer.getCredits() >= 1){
-                    System.out.println("number of credits before buy: " + currentPlayer.getCredits()
-                            + " and number of undos: "+ currentPlayer.getNumberOfUndos());
-                    currentPlayer.removeCredits(1);
-                    currentPlayer.buyUndo();
-                    System.out.println("number of credits after buy: " + currentPlayer.getCredits()
-                            + " and number of undos: "+ currentPlayer.getNumberOfUndos());
-                }
-                else if(selection == 1 && currentPlayer.getCredits() >=2){
-                    System.out.println("number of credits before buy: " + currentPlayer.getCredits()
-                            + " and cards in hand");
+                    System.out.println("here is the status of the map");
+                    gameMap.getMapStatus();
+                } else if (answer == 1) {
+                    bot.sendMessage("Here are the number of cards before traded in: ");
+                    bot.sendMessage("Here are the cards in hand");
                     currentPlayer.printCardsInHard();
-                    currentPlayer.removeCredits(1);
-                    theDeck.drawCardFromDeck(currentPlayer);
+                    bot.sendMessage("Select first card");
+                    int card1 = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+                    bot.sendMessage("Select second card");
+                    int card2 = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+                    bot.sendMessage("Select third card");
+                    int card3 = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
 
-                    System.out.println("number of credits after buy: " + currentPlayer.getCredits()
-                            + " and cards in hand");
+
+
+
+
+                    currentPlayer.tradeInCards(card1, card2, card3);
+                    bot.sendMessage("Here are the number of cards after traded in: ");
                     currentPlayer.printCardsInHard();
+                } else if (answer == 2) {
+                    bot.sendMessage("how many credits would you like to buy?");
+
+                    amountToBuy = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+                    System.out.println("Here are number of credits before buy" + currentPlayer.getCredits());
+
+                    currentPlayer.buyCredits(currentPlayer, amountToBuy);
+                    System.out.println("Here are number of credits after buy" + currentPlayer.getCredits());
+                } else if (answer == 3) {
+
+                    bot.sendMessage("Enter player name to transfer to");
+
+                    receiverName = fileCheck(file, lastModified, currentLineInFile);
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+                    bot.sendMessage("How many credits to transfer?");
+                    creditsToTransfer = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+
+                    Player receiver = new Player();
+                    for (int i = 0; i < playerList.size(); i++) {
+                        if (receiverName.compareTo(playerList.get(i).getPlayerName()) == 0) {
+                            receiver = playerList.get(i);
+                            System.out.println("The player you are transfering credits to is player number: " + i);
+                        }
+                    }
+                    System.out.println("Here are number of credits of player transfering before: " + currentPlayer.getCredits());
+                    System.out.println("Here are number of credits of receiver before: " + receiver.getCredits());
+                    currentPlayer.transferCredits(currentPlayer, receiver, creditsToTransfer);
+                    System.out.println("Here are number of credits of player transfering after: " + currentPlayer.getCredits());
+                    System.out.println("Here are number of credits of receiver after: " + receiver.getCredits());
+
+                } else if (answer == 4) {
+                    //Does nothing because they are skipping turn
+                } else if (answer == 5) {
+                    bot.sendMessage("What would you like to buy?" +
+                            "Enter 0 for buy undo (cost 1),Enter 1 for buy card (cost 2) ");
+
+                    selection = Integer.parseInt(fileCheck(file, lastModified, currentLineInFile));
+                    currentLineInFile++;
+                    lastModified = file.lastModified();
+                    if (selection == 0 && currentPlayer.getCredits() >= 1) {
+                        System.out.println("number of credits before buy: " + currentPlayer.getCredits()
+                                + " and number of undos: " + currentPlayer.getNumberOfUndos());
+                        currentPlayer.removeCredits(1);
+                        currentPlayer.buyUndo();
+                        System.out.println("number of credits after buy: " + currentPlayer.getCredits()
+                                + " and number of undos: " + currentPlayer.getNumberOfUndos());
+                    } else if (selection == 1 && currentPlayer.getCredits() >= 2) {
+                        System.out.println("number of credits before buy: " + currentPlayer.getCredits()
+                                + " and cards in hand");
+                        currentPlayer.printCardsInHard();
+                        currentPlayer.removeCredits(1);
+                        theDeck.drawCardFromDeck(currentPlayer);
+
+                        System.out.println("number of credits after buy: " + currentPlayer.getCredits()
+                                + " and cards in hand");
+                        currentPlayer.printCardsInHard();
+                    }
                 }
-            }
 
-            System.out.println("Do you wish to undo action?(y/n");
-            Scanner scAnswer = new Scanner(System.in);
-            String undoAnswer  = scAnswer.nextLine().toUpperCase();
-            if(undoAnswer == "Y") {
-                System.out.println("Here are current player Number of undos" + currentPlayer.getNumberOfUndos());
-                if (currentPlayer.getNumberOfUndos() > 0) {
+                bot.sendMessage("Do you wish to undo action?(y/n)");
+                String undoAnswer = fileCheck(file, lastModified, currentLineInFile);
+                currentLineInFile++;
+                lastModified = file.lastModified();
 
-
-                    List<Army> countryStates = currentPlayer.getCountryStates();
-                    int[] getAttackerAndDefender = currentPlayer.getAttackerAndDefender();
-                    if (answer == 0) {
-                        System.out.println("undoing the attack");
-                        System.out.println("value of the countries after the attack: ");
-                        gameMap.getMapStatus();
-
-                        gameMap.getMap().get(getAttackerAndDefender[0]).setControllingPlayer(countryStates.get(0).getControllingPlayer());
-                        gameMap.getMap().get(getAttackerAndDefender[0]).setNumberArmies(countryStates.get(0).getNumberArmies());
-
-                        gameMap.getMap().get(getAttackerAndDefender[1]).setControllingPlayer(countryStates.get(1).getControllingPlayer());
-                        gameMap.getMap().get(getAttackerAndDefender[1]).setNumberArmies(countryStates.get(1).getNumberArmies());
-
-                        System.out.println("value of the countries after the undo: ");
-                        gameMap.getMapStatus();
-
-                        //undo attack
-                        //currentPlayer.getUndo minus 1
-                    }
-                    else if(answer ==1){
-                        //undo traded in cards
-                        //currentPlayer.useUndo()
-                    }
-                    else if (answer == 2) {
-                        System.out.println("value of credits after buy: " + currentPlayer.getCredits());
-                        currentPlayer.removeCredits(amountToBuy);
-                        currentPlayer.useUndo();
-                        System.out.println("value of credits after undo: "+ currentPlayer.getCredits());
-                    }
+                if ((undoAnswer.toUpperCase()).compareTo("Y") == 0) {
+                    System.out.println("Here are current player Number of undos" + currentPlayer.getNumberOfUndos());
+                    if (currentPlayer.getNumberOfUndos() > 0) {
 
 
+                        List<Army> countryStates = currentPlayer.getCountryStates();
+                        int[] getAttackerAndDefender = currentPlayer.getAttackerAndDefender();
 
-                    else if (answer == 3) {
-                        Player receiver = new Player();
-                        for (int i = 0; i < playerList.size(); i++) {
-                            if (receiverName == playerList.get(i).getPlayerName()) {
-                                receiver = playerList.get(i);
+                        String []beforeAttackNames = currentPlayer.getBeforeAttackControllingPlayers();
+                        int []beforeAttackNumArmies = currentPlayer.getBeforeAttackNumberArmies();
+                        if (answer == 0) {
+                            System.out.println("undoing the attack");
+                            //Old version Doesn't work because the value passed into the arrayList that I thought
+                            //Was a copy of the map before the attack, is actually a reference
+                            //SO when i change the map, then the thing stored inside the arrayList countryStates
+                            //of course changes aswell
+
+
+                            //Works
+                            System.out.println("Here are the values of the attacking country before the attack: " +
+                                    "controlling player =" +  beforeAttackNames[0]+
+                                    "number of armies=" + beforeAttackNumArmies[0]);
+                            System.out.println("Here are the values of the defending country before the attack: " +
+                                    "controlling player =" +  beforeAttackNames[1]+
+                                    "number of armies=" + beforeAttackNumArmies[1]);
+
+                            System.out.println("value of the countries before the attack: ");
+                            gameMap.getMapStatus();
+
+                            gameMap.getMap().get(getAttackerAndDefender[0]).setControllingPlayer(beforeAttackNames[0]);
+                            gameMap.getMap().get(getAttackerAndDefender[0]).setNumberArmies(beforeAttackNumArmies[0]);
+
+                            gameMap.getMap().get(getAttackerAndDefender[1]).setControllingPlayer(beforeAttackNames[1]);
+                            gameMap.getMap().get(getAttackerAndDefender[1]).setNumberArmies(beforeAttackNumArmies[1]);
+
+                            System.out.println("value of the countries after the undo: ");
+                            gameMap.getMapStatus();
+
+                            //undo attack
+                            //currentPlayer.getUndo minus 1
+                        } else if (answer == 1) {
+                            //undo traded in cards
+                            //currentPlayer.useUndo()
+                        } else if (answer == 2) {
+                            System.out.println("value of credits after buy: " + currentPlayer.getCredits());
+                            currentPlayer.removeCredits(amountToBuy);
+                            currentPlayer.useUndo();
+                            System.out.println("value of credits after undo: " + currentPlayer.getCredits());
+                        } else if (answer == 3) {
+                            Player receiver = new Player();
+                            for (int i = 0; i < playerList.size(); i++) {
+                                if (receiverName == playerList.get(i).getPlayerName()) {
+                                    receiver = playerList.get(i);
+                                }
                             }
-                        }
-                        System.out.println("Here are number of credits of player transfering before: " + currentPlayer.getCredits());
-                        System.out.println("Here are number of credits of receiver before: " + receiver.getCredits());
+                            System.out.println("Here are number of credits of player transfering before: " + currentPlayer.getCredits());
+                            System.out.println("Here are number of credits of receiver before: " + receiver.getCredits());
 
 
-                        currentPlayer.transferCredits(receiver, currentPlayer, creditsToTransfer);
+                            currentPlayer.transferCredits(receiver, currentPlayer, creditsToTransfer);
 
 
-                        System.out.println("Here are number of credits of player transfering after: " + currentPlayer.getCredits());
-                        System.out.println("Here are number of credits of receiver after: " + receiver.getCredits());
+                            System.out.println("Here are number of credits of player transfering after: " + currentPlayer.getCredits());
+                            System.out.println("Here are number of credits of receiver after: " + receiver.getCredits());
 
-                        currentPlayer.useUndo();
-                    }
-                    else if (answer == 4) {
-                        //skip turn undo soon
-
-                    }
-                    else if (answer == 5) {
-                        if (selection == 0) {
-                            System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
-                            System.out.println("Here are number of undos of player after buying: " + currentPlayer.getNumberOfUndos());
-                            currentPlayer.addCredits(1);
-                            //once to remove the bought undo, and second to actually subtract the undo used
                             currentPlayer.useUndo();
-                            currentPlayer.useUndo();
-                            System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
-                            System.out.println("Here are number of undos of player after buying: " + currentPlayer.getNumberOfUndos());
-                        }
-                        else if (selection == 1) {
-                            System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
-                            System.out.println("Here are cards in hand after buying: ");
-                            currentPlayer.printCardsInHard();
+                        } else if (answer == 4) {
+                            //skip turn undo soon
 
-                            currentPlayer.addCredits(1);
-                            theDeck.undoDrawCardFromDeck(currentPlayer);
-                            currentPlayer.useUndo();
+                        } else if (answer == 5) {
+                            if (selection == 0) {
+                                System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
+                                System.out.println("Here are number of undos of player after buying: " + currentPlayer.getNumberOfUndos());
+                                currentPlayer.addCredits(1);
+                                //once to remove the bought undo, and second to actually subtract the undo used
+                                currentPlayer.useUndo();
+                                currentPlayer.useUndo();
+                                System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
+                                System.out.println("Here are number of undos of player after buying: " + currentPlayer.getNumberOfUndos());
+                            } else if (selection == 1) {
+                                System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
+                                System.out.println("Here are cards in hand after buying: ");
+                                currentPlayer.printCardsInHard();
 
-                            System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
-                            System.out.println("Here are cards in hand after buying: ");
-                            currentPlayer.printCardsInHard();
+                                currentPlayer.addCredits(1);
+                                theDeck.undoDrawCardFromDeck(currentPlayer);
+                                currentPlayer.useUndo();
+
+                                System.out.println("Here are number of credits of player after buying: " + currentPlayer.getCredits());
+                                System.out.println("Here are cards in hand after buying: ");
+                                currentPlayer.printCardsInHard();
+
+                            }
 
                         }
-
+                    } else if (currentPlayer.getNumberOfUndos() == 0) {
+                        System.out.println("Sorry no undo's left");
+                        bot.sendMessage("Sorry no undo's");
                     }
                 }
-                else if (currentPlayer.getNumberOfUndos() == 0) {
-                    System.out.println("Sorry no undo's left");
+                else {
+
                 }
+                tweetGame();
             }
         }
     }
@@ -579,91 +654,55 @@ public class Player_Controller {
         this.currentLineInFile++;
     }
 
+    public void uploadFileToS3(){
+        String key ="";
+        String secKey = "";
+
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("config.properties");
+
+            // load a properties file
+            prop.load(input);
+
+            key = prop.getProperty("key");
+            secKey = prop.getProperty("secKey");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        UploadObject myUpload = new UploadObject();
+        String filePath = "fileToS3";
+        myUpload.upload(key, secKey,"mikebitest05012018" , "gameStatus",  filePath);
+    }
+
 
 
 
 
     public static void main(String []args){
-        //uncomment when done testing
-//        String key ="";
-//        String secKey = "";
-//
-//        Properties prop = new Properties();
-//        InputStream input = null;
-//        try {
-//            input = new FileInputStream("config.properties");
-//
-//            // load a properties file
-//            prop.load(input);
-//
-//            key = prop.getProperty("key");
-//            secKey = prop.getProperty("secKey");
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        } finally {
-//            if (input != null) {
-//                try {
-//                    input.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-////
-////        System.out.println(key);
-////        System.out.println(secKey);
-//        UploadObject myUpload = new UploadObject();
-//        String filePath = "fileToS3";
-//        myUpload.upload(key, secKey,"mikebitest05012018", "gameStatus",  filePath);
-
-        String USA = "USA";
-        String JPN = "JPN";
-        String EU = "EU";
-//        String CA = "CA";
-//        String SA = "SA";
-//        String AFRICA = "AFRICA";
-
-
         Graph myGame = new Graph();
-        myGame.createInitialMap(3);
-        myGame.bindCountriesToNumbers("USA");
-        myGame.bindCountriesToNumbers("JPN");
-        myGame.bindCountriesToNumbers("EU");
-//        myGame.bindCountriesToNumbers("CA");
-//        myGame.bindCountriesToNumbers("SA");
-//        myGame.bindCountriesToNumbers("AFRICA");
-//        myGame.addEdge(USA, CA);
-//        myGame.addEdge(USA, SA);
-//        myGame.addEdge(EU, AFRICA);
-        myGame.addEdge(USA, JPN);
-        myGame.addEdge(USA, EU);
-
+        myGame.build_Graph();
         myGame.printMapAdjacencies();
         Deck theDeck = new Deck();
-//
-//
         Map myGameMap = new Map(myGame);
-
         Dice theDie = new Dice();
-//
-//        Player bryan = new Player("Bryan", 0);
-//        Player jake = new Player("Jake", 1);
-//        myGameMap.addArmy(USA, bryan);
-//        myGameMap.addArmy(EU, bryan);
-//        myGameMap.addArmy(EU, bryan);
-//        myGameMap.getMapStatus();
-        //myGameMap.addArmy(USA, bryan);
-        //myGameMap.getMapStatus();
-        //bryan.attack(myGameMap, myGame, theDie, bryan, jake);
-        //System.out.println();
-        //myGameMap.getMapStatus();
+
 
 
 
 
         Player_Controller gameController = new Player_Controller(2, myGameMap, theDeck, myGame);
 
-        //Show who the layers are
+        //Show who the Players are
         for(int i =0; i < gameController.playerList.size(); i++){
             List<Player> playerList = gameController.getPlayerList();
             System.out.println("Player " + i+ " is " + (playerList.get(i)).getPlayerName());
@@ -674,15 +713,8 @@ public class Player_Controller {
         //allows players to claim countries and add initial armies to them
         gameController.fillMap();
 
+        gameController.uploadFileToS3();
         //prints status of map so far
-        System.out.println("hello");
-        myGameMap.getMapStatus();
-//        Player_Controller gameController = new Player_Controller(2, myGameMap);
-//
-
-
+        //myGameMap.getMapStatus();
     }
-
-
-
 }

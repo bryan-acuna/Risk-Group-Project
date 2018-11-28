@@ -12,6 +12,8 @@ public class Player {
     private int numberOfUndos;
     private List<Army> countryStates; //a way to keep track of the state of a defending country
                                     //and be able to revert back to those states if undo
+    private String[] beforeAttackControllingPlayers;
+    private int [] beforeAttackNumberArmies;
     private int []attackerAndDefenderCountryID;
 
     Player(){
@@ -23,9 +25,12 @@ public class Player {
         playerID = ID;
         cardsInHand = new ArrayList<>();
         credits =0;
-        numberOfUndos = 0;
+        numberOfUndos = 1;
         attackerAndDefenderCountryID = new int[2];
         countryStates = new ArrayList<>();
+        beforeAttackControllingPlayers = new String[2];
+        beforeAttackNumberArmies = new int[2];
+
         //increasePlayerCount();
     }
 
@@ -49,12 +54,15 @@ public class Player {
         return numberOfUndos;
     }
 
-    public void tradeInCards(Card firstTradeIn, Card secondTradeIn, Card thirdTradeIn){
+    public void tradeInCards(int card1, int card2, int card3){
         if(cardsInHand.size() > 3) {
             System.out.println("Here are the cards you have: ");
             printCardsInHard();
             System.out.println("which would you like to trade in? Enter the index values of the cards");
 
+            Card firstTradeIn = cardsInHand.get(card1);
+            Card secondTradeIn = cardsInHand.get(card2);
+            Card thirdTradeIn = cardsInHand.get(card3);
 
             List<String> armyTypes = new ArrayList<>();
             armyTypes.add("INFANTRY");
@@ -73,7 +81,6 @@ public class Player {
             if(armyTypes.size() == 0){
                 armiesToPlace += 4;
                 removeCardsFromHand(firstCardValue, secondCardValue, thirdCardValue);
-
             }
             else if(armyTypes.size() == 1 && (firstCardValue == "WILD" || secondCardValue == "WILD" || thirdCardValue == "WILD" )){
                 armiesToPlace +=4;
@@ -213,8 +220,18 @@ public class Player {
 
         countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(capsAttackingCountry)));
         countryStates.add(gameMap.getMap().get(gameMap.getHashMap().get(capsdefendingCountry)));
+
+        //Working on this part
+        beforeAttackControllingPlayers[0] = gameMap.getMap().get(gameMap.getHashMap().get(capsAttackingCountry)).getControllingPlayer();
+        beforeAttackNumberArmies[0] = gameMap.getMap().get(gameMap.getHashMap().get(capsAttackingCountry)).getNumberArmies();
+
+        beforeAttackControllingPlayers[1] = gameMap.getMap().get(gameMap.getHashMap().get(capsdefendingCountry)).getControllingPlayer();
+        beforeAttackNumberArmies[1] = gameMap.getMap().get(gameMap.getHashMap().get(capsdefendingCountry)).getNumberArmies();
+
+
         System.out.println("attack done");
         if(!myGame.getCountryAdjacency(capsAttackingCountry).contains(capsdefendingCountry)){
+            System.out.println("Country not adjacent");
             return false;
         }
 
@@ -242,14 +259,16 @@ public class Player {
 
 
         //Highest dice roll for defender
-        int defTopNum = 0;
-        for(int y = 0; y < armiesDefending; y++) {
-            int temp = theDie.rollDice();
-            if (defTopNum < temp) {
-                defTopNum = temp;
-            }
-        }
+        int defTopNum = 1;
+//        for(int y = 0; y < armiesDefending; y++) {
+//            int temp = theDie.rollDice();
+//            if (defTopNum < temp) {
+//                defTopNum = temp;
+//            }
+//        }
 
+        System.out.println("attacker dice" + attTopNum);
+        System.out.println("defender dice" + defTopNum);
 
         if(attTopNum > defTopNum) {
             System.out.println("Your army has won!");
@@ -257,7 +276,8 @@ public class Player {
 
 
             //take control of country
-            gameMap.removeOneArmy(capsAttackingCountry);
+            //gameMap.removeOneArmy(capsAttackingCountry);
+            //gameMap.removeOneArmy(capsdefendingCountry);
             gameMap.addArmy(capsdefendingCountry, attacker);
             gameMap.TakeOver(capsdefendingCountry, attacker.getPlayerName());
 
@@ -267,34 +287,20 @@ public class Player {
             whoWon = "DEFENDER";
 
             //subtract one army from yourself
-            gameMap.subArmy(capsdefendingCountry, attacker, defender);
-            gameMap.TakeOver(capsAttackingCountry, defender.getPlayerName());
+            gameMap.subArmy(capsAttackingCountry, attacker, defender);
+            //gameMap.TakeOver(capsAttackingCountry, defender.getPlayerName());
         }
 
-
-
-
+        //System.out.println("here is the status of the map");
+        //gameMap.getMapStatus();
         //sc.close();
         return true;
 
     }
-
-//    public int skipTurn(Player currentPlayer) {
-//        int nextID;
-//        System.out.println(currentPlayer.getPlayerName() + " has skipped his turn");
-//        if(currentPlayer.getPlayerID() == currentPlayer.getPlayerCount()) {
-//            nextID = 1;
-//        }
-//        else {
-//            nextID = currentPlayer.getPlayerID() + 1;
-//        }
-//
-//        System.out.println("Next player is player " + nextID);
-//        return nextID;
-//    }
-
-//    public void reorganizeArmy() {
-//
-//    }
-
+    public String[] getBeforeAttackControllingPlayers(){
+        return beforeAttackControllingPlayers;
+    }
+    public int[] getBeforeAttackNumberArmies(){
+        return beforeAttackNumberArmies;
+    }
 }

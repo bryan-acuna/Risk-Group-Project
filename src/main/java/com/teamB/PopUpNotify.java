@@ -6,9 +6,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import javax.swing.JOptionPane;
 import java.io.*;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.io.BufferedWriter;
 
 public class PopUpNotify
@@ -34,22 +32,6 @@ public class PopUpNotify
 
 
     public static void main(String []args) {
-
-
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask(){
-            int secondsPassed = 0;
-            public void run(){
-                if(secondsPassed == 5){
-                    System.out.println("out of time");
-                }
-                secondsPassed++;
-
-            }
-        };
-
-
-
 
     }
 

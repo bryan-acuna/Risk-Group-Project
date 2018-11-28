@@ -108,6 +108,18 @@ public class Graph{
             return false;
         }
     }
+    public void build_Graph(){
+        String USA = "USA";
+        String JPN = "JPN";
+        String EU = "EU";
+        createInitialMap(3);
+        bindCountriesToNumbers("USA");
+        bindCountriesToNumbers("JPN");
+        bindCountriesToNumbers("EU");
+
+        addEdge(USA, JPN);
+        addEdge(USA, EU);
+    }
 
     public List<String> getCountriesInOrder(){
         return countriesInOrder;

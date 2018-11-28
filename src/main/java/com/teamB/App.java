@@ -64,11 +64,7 @@ public class App
         myGameMap.getMapStatus();
 
 
-
         Twitter twitter = TwitterFactory.getSingleton();
-    // System.out.println("Type in tweet message: ");
-    // Scanner scan = new Scanner(System.in);
-    // String tweet = scan.nextLine();
         int countrySize = myGameMap.getCountryCount();
         String tweet = " ";
         for(int i = 0; i < countrySize; i++) {
@@ -77,13 +73,14 @@ public class App
         Status status = twitter.updateStatus(tweet);
         System.out.println("Successfully updated the status to [" + status.getText() + "].");
 
-        if(myGameMap.isGameOver()) {
-            String finalTweet = " ";
-            for(int i = 0; i < countrySize; i++) {
-                finalTweet = finalTweet + myGameMap.getIndividualMap(i) + " ";
-            }
-            Status finalStatus = twitter.updateStatus("End score:" + tweet);
-            System.out.println("Successfully updated the status to [" + finalStatus.getText() + "].");
+        //if(myGameMap.isGameOver()) {
+        String finalTweet = " ";
+        for(int i = 0; i < countrySize; i++) {
+            finalTweet = finalTweet + myGameMap.getIndividualMap(i) + " ";
         }
+        Status finalStatus = twitter.updateStatus("End score:" + tweet);
+        System.out.println("Successfully updated the status to [" + finalStatus.getText() + "].");
+        //}
+
     }
 }

@@ -1,0 +1,51 @@
+ASIA
+Ural: Siberia, Afghanistan, China
+Siberia: Ural, Yakutsk, Irkutsk, Mongolia, China
+Yakutsk: Siberia, Irkutsk, Kamchatka
+Kamchatka: Yakutsk, Irkutsk, Mongolia, Japan, Alaska
+Irkutsk: Siberia, Yakutsk, Kamchatka, Mongolia
+Afghanistan: Ural, China, India, Middle East, Ukraine
+China: Afganistan, Ural, Siberia, Mongolia, Siam, India
+Mongolia: China, Ural, Siberia, Irkustk, Kamchatka, Japan
+Japan: Mongolia, Kamchatka
+Middle East: East Africa, Egypt, Southern Europe, Ukraine, Afghanistan, India
+India: Middle East, Afghanistan, China, Siam
+Siam: India, China, Indonesia
+
+AUSTRALIA + SE ASIA
+Indonesia: Siam, New Guinea, Western Australia
+New Guinea: Indonesia, Western Australia, Eastern Australia
+Western Australia: Indonesia, New Guinea, Eastern Australia
+Eastern Australia: Western Australia, New Guinea
+
+AFRICA
+North Africa: Brazil, Southern Europe, Egypt, East Africa, Congo
+Egypt: North Africa, Southern Europe, Middle East, East Africa
+Congo: North Africa, East Africa, South Africa
+East Africa: Madagascar, South Africa, Congo, North Africa, Egypt, Middle East
+South Africa: Congo, East Africa, Madagascar
+Madagascar: South Africa, East Africa
+
+alaska: north territory, alberta
+north west territory: alberta, alaska, ontario, greenland
+alberta: alaska, north west territory, ontario, western united states,
+ontario: north west territory, alberta, western united states, quebec, eastern united states
+greenland: north west territory, ontario, quebec, iceland
+quebec: greenland, ontario, eastern united states
+western united states: alberta, ontario, eastern united states, central america
+eastern united states: quebec, ontario, western united states, central america
+central america: western united states, eastern united states, venezuela
+
+venezuela: central america, brazil, peru
+brazil: venezuela, peru, argentina, north africa
+peru: venezuela, brazil, argentina
+argentina: peru, brazil
+
+ukraine: scandinavia, ural, afghanistan, northern europe, southern europe, middle east
+scandinavia: ukraine, northern europe, iceland, great britain
+northern europe: ukraine, southern europe, western europe, scandinavia, great britain
+southern europe: northern europe, ukraine, middle east, egypt, north africa, western europe
+western europe: northern europe, southern europe, great britain
+great britain: iceland, scandinavia, northern europe, western europe
+iceland: greenland, scandinavia, great britain
+

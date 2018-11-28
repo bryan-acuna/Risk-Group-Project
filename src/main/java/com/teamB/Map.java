@@ -34,8 +34,6 @@ public class Map {
 
             countriesAvailable++;
         }
-
-
     }
     public List<String> getCountriesInOrder(){
         return countriesInOrder;
@@ -109,9 +107,11 @@ public class Map {
         (countries.get(countryID)).subArmy();
 
         if((countries.get(countryID)).getNumberArmies() == 0) {
-            System.out.println("You have lost your army. Defender takes over.");
-            countriesAvailable++;
-            addArmy(countryName, otherPlayer);
+            countries.get(countryID).setControllingPlayer("None");
+            //System.out.println("You have lost your army. Defender takes over.");
+            //countriesAvailable++;
+            //addArmy(countryName, otherPlayer);
+            //TakeOver();
         }
     }
 
@@ -143,8 +143,9 @@ public class Map {
 
         boolean continueLooking = true;
         int countryIterator = 1;
-        String samePlayer = countriesInOrder.get(0);
+        //String samePlayer = countriesInOrder.get(0);
         while(continueLooking){
+
 
             if((countries.get(countryIterator)).getControllingPlayer() != "None" && countryIterator<(countries.size()) &&
                     (countries.get(countryIterator)).getControllingPlayer() == ((countries.get(countryIterator-1)).getControllingPlayer())){
@@ -153,7 +154,6 @@ public class Map {
                 if(countryIterator == countries.size()-1){
                     continueLooking = false;
                 }
-
             }
 
 
@@ -162,9 +162,22 @@ public class Map {
                 gameOver = false;
                 continueLooking = false;
                 //System.out.println(gameOver);
-
             }
         }
         return gameOver;
+    }
+
+    public boolean isGameOverCheck(){
+
+        List myList = new ArrayList();
+
+
+        for(int i =0; i < countries.size(); i++){
+            myList.add(countries.get(i).getControllingPlayer());
+        }
+        boolean allEqual = new HashSet<String>(myList).size() <= 1;
+
+        return allEqual;
+
     }
 }
