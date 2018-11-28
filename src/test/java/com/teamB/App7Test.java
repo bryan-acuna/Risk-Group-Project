@@ -1,4 +1,5 @@
 package com.teamB;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +54,7 @@ public class App7Test {
         try {
             Status status = twitter.updateStatus(tweet);
             System.out.println("Successfully updated the status to [" + status.getText() + "].");
-            assertTrue(tweet.compareTo(status.getText()) == 0);
+            assertEquals(true,tweet.compareTo(status.getText()) == 0);
         }
         catch(TwitterException e) {
 
