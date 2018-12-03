@@ -208,7 +208,8 @@ public class Player {
         int countryID = gameMap.getHashMap().get(capsdefendingCountry);
         attackerAndDefenderCountryID[1] = countryID;
         String defenderName = gameMap.getMap().get(countryID).getControllingPlayer();
-        PopUpNotify.infoBox(defenderName+" are under attack!", "Notify Player");
+        //Uncomment popUp notify when ready to play game, removed for testing purposes
+        //PopUpNotify.infoBox(defenderName+" are under attack!", "Notify Player");
         //We have the defenders name, now we just need to find the player object
         //in the arrayList
 //        for(int i =0; i < playerList.size(); i++){

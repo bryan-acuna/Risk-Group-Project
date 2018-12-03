@@ -158,101 +158,6 @@ public class Player_Controller {
         return numArmiesEach;
     }
 
-
-    public void undoAddArmyToCountry(String countryName, Player thePlayer) {
-        if(thePlayer.getNumberOfUndos() < 1){
-            System.out.println("Not enough credits for undo");
-        }
-        else{
-            String capitalCountryName = countryName.toUpperCase();
-            gameMap.setCountriesAvailable(gameMap.getCountriesAvailable()+1);
-            //Idea is to use the player input of which country they selected
-            //find the army object inside the country
-            //Then see if it is just one 1 army, in which case the undo will remove
-            //ownership and revert the country back to no one owns it
-            //Or if there are more than 1 army, just remove one army from the country
-            HashMap<String, Integer> countryIDFromString = gameMap.getHashMap();
-            int countryID = countryIDFromString.get(capitalCountryName);
-            List<Army> countries = gameMap.getMap();
-            Army armiesInCountry = countries.get(countryID);
-            if (armiesInCountry.getNumberArmies() == 1) {
-                armiesInCountry.setControllingPlayer("None");
-                armiesInCountry.setNumberArmies(0);
-            } else {
-                armiesInCountry.subArmy();
-            }
-            thePlayer.useUndo();
-        }
-    }
-
-    public void undoAttack(Player currentPlayer){
-        if(currentPlayer.getNumberOfUndos() < 1){
-            System.out.println("Not enough credits for undo");
-        }
-        else {
-            List<Army> countryStates = currentPlayer.getCountryStates();
-            int[] getAttackerAndDefender = currentPlayer.getAttackerAndDefender();
-
-            System.out.println("undoing the attack");
-            System.out.println("value of the countries after the attack: ");
-            gameMap.getMapStatus();
-
-            gameMap.getMap().get(getAttackerAndDefender[0]).setControllingPlayer(countryStates.get(0).getControllingPlayer());
-            gameMap.getMap().get(getAttackerAndDefender[0]).setNumberArmies(countryStates.get(0).getNumberArmies());
-            gameMap.getMap().get(getAttackerAndDefender[1]).setControllingPlayer(countryStates.get(1).getControllingPlayer());
-            gameMap.getMap().get(getAttackerAndDefender[1]).setNumberArmies(countryStates.get(1).getNumberArmies());
-            System.out.println("value of the countries after the undo: ");
-            gameMap.getMapStatus();
-            currentPlayer.useUndo();
-        }
-    }
-
-    public void undoBuyCredits(Player currentPlayer, int creditsToRefund) {
-        if (currentPlayer.getNumberOfUndos() < 1) {
-            System.out.println("Not enough credits for undo");
-        } else {
-            System.out.println("value of credits after buy: " + currentPlayer.getCredits());
-            currentPlayer.removeCredits(creditsToRefund);
-            currentPlayer.useUndo();
-            System.out.println("value of credits after undo: " + currentPlayer.getCredits());
-
-        }
-    }
-
-    public void undoTransferCredits(Player currentPlayer, Player playerInitiallyTransferedCredits, int transferedCredits){
-        if(currentPlayer.getNumberOfUndos() < 1){
-            System.out.println("Not enough credits for undo");
-        }
-        else {currentPlayer.transferCredits(playerInitiallyTransferedCredits, currentPlayer, transferedCredits);
-        currentPlayer.useUndo();}
-    }
-
-    public void undoBuyUndo(Player currentPlayer){
-        if(currentPlayer.getNumberOfUndos() < 1){
-            System.out.println("Not enough credits for undo");
-        }
-        else {currentPlayer.addCredits(1);
-        currentPlayer.useUndo();
-        currentPlayer.useUndo();}
-    }
-
-    public void undoBuyCard(Player currentPlayer){
-        if(currentPlayer.getNumberOfUndos() < 1){
-            System.out.println("Not enough credits for undo");
-        }
-        else {currentPlayer.addCredits(1);
-        theDeck.undoDrawCardFromDeck(currentPlayer);
-        currentPlayer.useUndo();}
-    }
-
-    public void printAvailableCountries(){
-        System.out.println("Here are the countries that have not been claimed");
-        for(int i =0; i < gameMap.getCountryCount(); i++){
-            if(gameMap.getMap().get(i).getControllingPlayer() == "None"){
-                System.out.println(gameMap.getCountriesInOrder().get(i));
-            }
-        }
-    }
     public void clearFile(File file){
         try {
             String str = "NewGame:";
@@ -707,14 +612,8 @@ public class Player_Controller {
             List<Player> playerList = gameController.getPlayerList();
             System.out.println("Player " + i+ " is " + (playerList.get(i)).getPlayerName());
         }
-
-
-
         //allows players to claim countries and add initial armies to them
         gameController.fillMap();
-
         gameController.uploadFileToS3();
-        //prints status of map so far
-        //myGameMap.getMapStatus();
     }
 }
