@@ -11,7 +11,7 @@ public class App16Test {
 
     @Test
     public void testingRoll() {
-        int[] testNum= new int[3];
+        int[] testArray= new int[3];
         testArray[0] = test.rollDice();
         testArray[1] = test.rollDice();
         testArray[2] = test.rollDice();
