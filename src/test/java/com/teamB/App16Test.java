@@ -10,18 +10,15 @@ public class App16Test {
 
 
     @Test
-    public void testRoll() {
+    public void testingRoll() {
         int[] testNum= new int[3];
-        testNum[0] = test.rollDice();
-        testNum[1] = test.rollDice();
-        testNum[2] = test.rollDice();
+        testArray[0] = test.rollDice();
+        testArray[1] = test.rollDice();
+        testArray[2] = test.rollDice();
 
-        assertTrue(testNum[0] > 0 && testNum[0] < 7);
-        assertTrue(testNum[1] > 0 && testNum[1] < 7);
-        assertTrue(testNum[2] > 0 && testNum[2] < 7);
-
-        assertEquals(2, test.rollDice());
-        assertEquals(3, test.rollDice());
+        assertTrue(testArray[0] > 0 && testArray[0] < 7);
+        assertTrue(testArray[1] > 0 && testArray[1] < 7);
+        assertTrue(testArray[2] > 0 && testArray[2] < 7);
 
 
     }
