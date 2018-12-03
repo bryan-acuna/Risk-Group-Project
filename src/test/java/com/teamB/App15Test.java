@@ -30,3 +30,4 @@ public class App15Test {
         player_controller.createPlayer("Jason",4);
         assertTrue((player_controller.getPlayerList().size() == 1));
     }
+}
