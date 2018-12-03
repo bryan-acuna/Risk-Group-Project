@@ -19,6 +19,9 @@ public class App16Test {
         assertTrue(testArray[0] > 0 && testArray[0] < 7);
         assertTrue(testArray[1] > 0 && testArray[1] < 7);
         assertTrue(testArray[2] > 0 && testArray[2] < 7);
+        
+        assertEquals(2, test.rollDice());
+        assertEquals(3, test.rollDice());
 
 
     }
