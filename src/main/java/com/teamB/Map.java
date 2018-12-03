@@ -132,40 +132,6 @@ public class Map {
         }
     }
 
-    /*
-    Checks to see if game is over
-    continue looking is set to true so we run the loop atleast once. The if statement checks that since
-    all empty armies are
-     */
-    public boolean isGameOver(){
-        boolean gameOver = false;
-
-
-        boolean continueLooking = true;
-        int countryIterator = 1;
-        //String samePlayer = countriesInOrder.get(0);
-        while(continueLooking){
-
-
-            if((countries.get(countryIterator)).getControllingPlayer() != "None" && countryIterator<(countries.size()) &&
-                    (countries.get(countryIterator)).getControllingPlayer() == ((countries.get(countryIterator-1)).getControllingPlayer())){
-                countryIterator++;
-                gameOver = true;
-                if(countryIterator == countries.size()-1){
-                    continueLooking = false;
-                }
-            }
-
-
-
-            else{
-                gameOver = false;
-                continueLooking = false;
-                //System.out.println(gameOver);
-            }
-        }
-        return gameOver;
-    }
 
     public boolean isGameOverCheck(){
 

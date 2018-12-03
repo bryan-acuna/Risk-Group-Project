@@ -41,8 +41,8 @@ public class AppTest
         myGameMap.addArmy(EU, mike);
         myGameMap.addArmy(JPN, mike);
 
-        //Should be true as all countries have been filled
-        assertTrue( myGameMap.isGameOver() );
+
+        assertTrue( myGameMap.isGameOverCheck() );
 
     }
 }
