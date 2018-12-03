@@ -7,6 +7,7 @@ import com.teamB.Dice;
 import org.junit.Test;
 
 public class App15Test {
+    
     @Test
     public void shouldAnswerWithTrue()
     {
